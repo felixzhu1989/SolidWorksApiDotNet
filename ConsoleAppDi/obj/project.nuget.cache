@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "dgSpecHash": "dJo2qK4XKenSHHDqU4qx6qnRDctH2qxY3A/u6gP3LzYQaiXKPoWuAEi/5ea29UcxE7gffq7UtSDYowul+rvr1Q==",
+  "success": true,
+  "projectFilePath": "E:\\CSharp\\repos\\SolidWorksApiDotNet\\ConsoleAppDi\\ConsoleAppDi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.abstractions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.binder\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.binder.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.commandline\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.commandline.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.environmentvariables\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.environmentvariables.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.fileextensions\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.fileextensions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.json\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.json.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.configuration.usersecrets\\7.0.0-preview.5.22301.12\\microsoft.extensions.configuration.usersecrets.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0-preview.5.22301.12\\microsoft.extensions.dependencyinjection.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0-preview.5.22301.12\\microsoft.extensions.dependencyinjection.abstractions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\7.0.0-preview.5.22301.12\\microsoft.extensions.fileproviders.abstractions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\7.0.0-preview.5.22301.12\\microsoft.extensions.fileproviders.physical.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\7.0.0-preview.5.22301.12\\microsoft.extensions.filesystemglobbing.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.hosting\\7.0.0-preview.5.22301.12\\microsoft.extensions.hosting.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\7.0.0-preview.5.22301.12\\microsoft.extensions.hosting.abstractions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.hosting.windowsservices\\7.0.0-preview.5.22301.12\\microsoft.extensions.hosting.windowsservices.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.abstractions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.configuration\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.configuration.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.console\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.console.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.debug\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.debug.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.eventlog\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.eventlog.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.logging.eventsource\\7.0.0-preview.5.22301.12\\microsoft.extensions.logging.eventsource.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.options\\7.0.0-preview.5.22301.12\\microsoft.extensions.options.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\7.0.0-preview.5.22301.12\\microsoft.extensions.options.configurationextensions.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0-preview.5.22301.12\\microsoft.extensions.primitives.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\solidworks.interop.sldworks\\29.4.1\\solidworks.interop.sldworks.29.4.1.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\solidworks.interop.swconst\\29.4.1\\solidworks.interop.swconst.29.4.1.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\system.diagnostics.eventlog\\7.0.0-preview.5.22301.12\\system.diagnostics.eventlog.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\system.serviceprocess.servicecontroller\\7.0.0-preview.5.22301.12\\system.serviceprocess.servicecontroller.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\system.text.encodings.web\\7.0.0-preview.5.22301.12\\system.text.encodings.web.7.0.0-preview.5.22301.12.nupkg.sha512",
+    "C:\\Users\\felix.zhu\\.nuget\\packages\\system.text.json\\7.0.0-preview.5.22301.12\\system.text.json.7.0.0-preview.5.22301.12.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8”而不是项目目标框架“net6.0”还原包“SolidWorks.Interop.sldworks 29.4.1”。此包可能与项目不完全兼容。",
+      "libraryId": "SolidWorks.Interop.sldworks",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8”而不是项目目标框架“net6.0”还原包“SolidWorks.Interop.swconst 29.4.1”。此包可能与项目不完全兼容。",
+      "libraryId": "SolidWorks.Interop.swconst",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}
