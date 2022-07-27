@@ -1,5 +1,6 @@
 ﻿using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace ConsoleAppDi
@@ -25,7 +26,10 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(Save)} - 保存文档");
             Console.WriteLine($"{nameof(SaveAs)} - 另存为文档，1参数，文档另存为完整地址（后缀：零件.sldprt，装配体.sldasm,工程图.slddrw）");
             Console.WriteLine($"{nameof(Close)} - 关闭当前激活文档");
-            Console.WriteLine($"{nameof(Open)} - 打开文档，2参数，1完整地址，2文档类型（Part，Assembly，Drawing）");
+            Console.WriteLine($"{nameof(Open)} - 打开文档，1参数，完整地址");
+            Console.WriteLine($"{nameof(Line)} - 草图-绘制直线，5参数，草图名称，x1,y1,x2,y2");
+            Console.WriteLine($"{nameof(CenterLine)} - 草图-绘制中心直线，5参数，草图名称，x1,y1,x2,y2");
+
         }
 
         /// <summary>
@@ -114,23 +118,22 @@ namespace ConsoleAppDi
         /// Opens an existing document and returns a pointer to the document object. 
         /// </summary>
         /// <param name="name">包括扩展名的完整路径Document name or full path if not in current directory, including extension</param>
-        /// <param name="type">文件的类型，Document type as defined in swDocumentTypes_e </param>
-        public void Open(string name, string type)
+        public void Open(string name)
         {
             if (_swApp==null) return;
             //判断文档是否存在
             if (!File.Exists(name)) return;
-            int tp = 0;
-            switch (type)
+            int type = 0;
+            switch (name.Substring(name.Length-3).ToLower())
             {
-                case "Part":
-                    tp = (int)swDocumentTypes_e.swDocPART;
+                case "prt":
+                    type = (int)swDocumentTypes_e.swDocPART;
                     break;
-                case "Assembly":
-                    tp = (int)swDocumentTypes_e.swDocASSEMBLY;
+                case "asm":
+                    type = (int)swDocumentTypes_e.swDocASSEMBLY;
                     break;
-                case "Drawing":
-                    tp = (int)swDocumentTypes_e.swDocDRAWING;
+                case "drw":
+                    type = (int)swDocumentTypes_e.swDocDRAWING;
                     break;
             }
             //If this argument is empty or the specified configuration is not present in the model, the model is opened in the last-used configuration
@@ -138,13 +141,70 @@ namespace ConsoleAppDi
             int error = 0;
             int warings = 0;
             //乱数参数，居然让SolidWorks崩溃了
-            var swModel = _swApp.OpenDoc6(name, tp, (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref error, ref warings);
+            var swModel = _swApp.OpenDoc6(name, type, (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref error, ref warings);
             //由于接下来我们不操作什么，所以不接受返回值也行，这里接收一下，打印一下名字
             Console.WriteLine(swModel.GetPathName());
         }
 
+        /// <summary>
+        /// 绘制直线草图
+        /// Creates a sketch line in the currently active 2D or 3D sketch. 
+        /// </summary>
+        /// <param name="sketchName">草图名称</param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        public void Line(string sketchName, string x1, string y1, string x2, string y2)
+        {
+            if (_swApp==null) return;
+            var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            var swExtension = swModel.Extension;
+            //选择草图,如果没选中，则选择前视基准面
+            var boolStatus = swExtension.SelectByID2(sketchName, "SKETCH", 0, 0, 0, false, 0, null, 0);
+            if (!boolStatus) swExtension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+            //BV1ya4y1n7xQ
+            //遍历特征，获取基准平面
 
 
+            var swSketchManager = swModel.SketchManager;
+            //进入草图编辑界面
+            swSketchManager.InsertSketch(true);
+            //关闭草图捕捉
+            var myLine = swSketchManager.CreateLine(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0);
+            if (myLine!=null) Console.WriteLine($"Name:{myLine.GetName()},Length:{myLine.GetLength()}");
+            swModel.ViewZoomToSelection();
+            //退出草图编辑
+            swSketchManager.InsertSketch(true);
+        }
+
+        /// <summary>
+        /// 绘制中心线
+        /// Creates a center line between the specified points. 
+        /// </summary>
+        /// <param name="sketchName">草图名称</param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        public void CenterLine(string sketchName, string x1, string y1, string x2, string y2)
+        {
+            if (_swApp==null) return;
+            var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            var swExtension = swModel.Extension;
+            //选择草图,如果没选中，则选择前视基准面
+            var boolStatus = swExtension.SelectByID2(sketchName, "SKETCH", 0, 0, 0, false, 0, null, 0);
+            if (!boolStatus) swExtension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+
+            var swSketchManager = swModel.SketchManager;
+            //进入草图编辑界面
+            swSketchManager.InsertSketch(true);
+            var myLine = swSketchManager.CreateCenterLine(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0);
+            if (myLine!=null) Console.WriteLine($"Name:{myLine.GetName()},Length:{myLine.GetLength()}");
+            swModel.ViewZoomToSelection();
+            //退出草图编辑
+            swSketchManager.InsertSketch(true);
+        }
 
         //打工人要画图
         public void CreatePolygon()
