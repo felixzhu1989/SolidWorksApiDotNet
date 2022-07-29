@@ -1,7 +1,6 @@
 ﻿using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
-using System.Diagnostics;
-using System.Drawing;
+using ConsoleAppDi.Extensions;
 
 namespace ConsoleAppDi
 {
@@ -29,6 +28,7 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(Open)} - 打开文档，1参数，完整地址");
             Console.WriteLine($"{nameof(Line)} - 草图-绘制直线，5参数，草图名称，x1,y1,x2,y2");
             Console.WriteLine($"{nameof(CenterLine)} - 草图-绘制中心直线，5参数，草图名称，x1,y1,x2,y2");
+            Console.WriteLine($"{nameof(CornerRectangle)} - 草图-绘制边角矩形（对角点坐标），5参数，草图名称，x1,y1,x2,y2");
 
         }
 
@@ -74,6 +74,11 @@ namespace ConsoleAppDi
         {
             if (_swApp==null) return;
             var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            if (swModel == null)
+            {
+                Console.WriteLine("请打开或新建文档");
+                return;
+            }
             int error = 0;
             int warings = 0;
             bool boolStatus = swModel.Save3((int)swSaveAsOptions_e.swSaveAsOptions_Silent, ref error, ref warings);
@@ -90,6 +95,11 @@ namespace ConsoleAppDi
         {
             if (_swApp==null) return;
             var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            if (swModel == null)
+            {
+                Console.WriteLine("请打开或新建文档");
+                return;
+            }
             var swExtension = swModel.Extension;
             int error = 0;
             int warings = 0;
@@ -140,7 +150,7 @@ namespace ConsoleAppDi
             //如果配置给空值，则默认打开上一次使用的配置
             int error = 0;
             int warings = 0;
-            //乱数参数，居然让SolidWorks崩溃了
+            //乱输入参数，居然让SolidWorks崩溃了
             var swModel = _swApp.OpenDoc6(name, type, (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref error, ref warings);
             //由于接下来我们不操作什么，所以不接受返回值也行，这里接收一下，打印一下名字
             Console.WriteLine(swModel.GetPathName());
@@ -159,6 +169,11 @@ namespace ConsoleAppDi
         {
             if (_swApp==null) return;
             var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            if (swModel == null)
+            {
+                Console.WriteLine("请打开或新建文档");
+                return;
+            }
             var swExtension = swModel.Extension;
             //选择草图,如果没选中，则选择前视基准面
             var boolStatus = swExtension.SelectByID2(sketchName, "SKETCH", 0, 0, 0, false, 0, null, 0);
@@ -190,26 +205,78 @@ namespace ConsoleAppDi
         public void CenterLine(string sketchName, string x1, string y1, string x2, string y2)
         {
             if (_swApp==null) return;
-            var swModel = (ModelDoc2)_swApp.ActiveDoc;
-            var swExtension = swModel.Extension;
-            //选择草图,如果没选中，则选择前视基准面
-            var boolStatus = swExtension.SelectByID2(sketchName, "SKETCH", 0, 0, 0, false, 0, null, 0);
-            if (!boolStatus) swExtension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+            //一不做二不休，把后面的全部搞成扩展方法，省的很多重复代码
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //Action需要传递一个参数swSketchManager
+                var myLine = swSketchManager.CreateCenterLine(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0);
+                if (myLine!=null) Console.WriteLine($"Name:{myLine.GetName()},Length:{myLine.GetLength()}");
+            });
 
-            var swSketchManager = swModel.SketchManager;
-            //进入草图编辑界面
-            swSketchManager.InsertSketch(true);
-            var myLine = swSketchManager.CreateCenterLine(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0);
-            if (myLine!=null) Console.WriteLine($"Name:{myLine.GetName()},Length:{myLine.GetLength()}");
-            swModel.ViewZoomToSelection();
-            //退出草图编辑
-            swSketchManager.InsertSketch(true);
+            //var swModel = (ModelDoc2)_swApp.ActiveDoc;
+            //if (swModel == null)
+            //{
+            //    Console.WriteLine("请打开或新建文档");
+            //    return;
+            //}
+            //var swExtension = swModel.Extension;
+            ////选择草图,如果没选中，则选择前视基准面
+            //var boolStatus = swExtension.SelectByID2(sketchName, "SKETCH", 0, 0, 0, false, 0, null, 0);
+            //if (!boolStatus)
+            //{
+            //    //swExtension.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+            //    swModel.GetRefPlane().FirstOrDefault()?.Select2(false, 0);
+            //}
+
+            //var swSketchManager = swModel.SketchManager;
+            ////进入草图编辑界面
+            //swSketchManager.InsertSketch(true);
+            ////关闭草图捕捉
+            //_swApp.WithToggleState(swUserPreferenceToggle_e.swSketchInference, false, () =>
+            //{
+            //    var myLine = swSketchManager.CreateCenterLine(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0);
+            //    if (myLine!=null) Console.WriteLine($"Name:{myLine.GetName()},Length:{myLine.GetLength()}");
+            //});
+
+            //swModel.ViewZoomToSelection();
+            ////退出草图编辑
+            //swSketchManager.InsertSketch(true);
         }
+
+        /// <summary>
+        /// 创建边角矩形（两个对角点坐标）
+        /// Creates a corner rectangle. 
+        /// </summary>
+        /// <param name="sketchName"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        public void CornerRectangle(string sketchName, string x1, string y1, string x2, string y2)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                var vSkLines = swSketchManager.CreateCornerRectangle(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
+
+
+
+
+
 
         //打工人要画图
         public void CreatePolygon()
         {
             if (_swApp==null) return;
+
             var swModel = (ModelDoc2)_swApp.NewPart();
             //var swModelDocExt = swModel.Extension;
             var swSketchMgr = swModel.SketchManager;
