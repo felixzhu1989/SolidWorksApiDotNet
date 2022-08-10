@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Reflection;
 using ConsoleAppDi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,8 +23,8 @@ void DoMyWork()
     //while死循环，独占控制台，让用户输入
     while (true)
     {
-        //用户输入,提示，用Help提示用户有那些命令，并注意方法的大小写
-        Console.WriteLine("\n请输入命令(注意大小写，Help查询)：\n");
+        //用户输入,提示，用Help提示用户有那些命令，忽略大小写
+        Console.WriteLine("\n请输入命令(Help查询)：\n");
         //如果方法带参数，我们使用空格分开
         var command= Console.ReadLine();
         //如果输入为空，则退出程序
@@ -36,7 +37,7 @@ void DoMyWork()
         {
             parameters[i]=commands[i+1];
         }
-        var method = typeof(Worker).GetMethod(commands[0])!;
+        var method = typeof(Worker).GetMethod(commands[0],BindingFlags.IgnoreCase|BindingFlags.Public|BindingFlags.Instance)!;
         try
         {
             //类的实例，执行方法，如果commands长度为1则没有参数，传递null

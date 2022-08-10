@@ -20,8 +20,8 @@ namespace ConsoleAppDi
         /// </summary>
         public void Help()
         {
-            Console.WriteLine($"{nameof(CreatePolygon)} - 创建多边形");
-            Console.WriteLine($"{nameof(NewDocument)} - 新建文档，1参数，文档类型（Part，Assembly，Drawing）");
+            
+            Console.WriteLine($"{nameof(NewDoc)} - 新建文档，1参数，文档类型（prt，asm，drw）");
             Console.WriteLine($"{nameof(Save)} - 保存文档");
             Console.WriteLine($"{nameof(SaveAs)} - 另存为文档，1参数，文档另存为完整地址（后缀：零件.sldprt，装配体.sldasm,工程图.slddrw）");
             Console.WriteLine($"{nameof(Close)} - 关闭当前激活文档");
@@ -29,6 +29,12 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(Line)} - 草图-绘制直线，5参数，草图名称，x1,y1,x2,y2");
             Console.WriteLine($"{nameof(CenterLine)} - 草图-绘制中心直线，5参数，草图名称，x1,y1,x2,y2");
             Console.WriteLine($"{nameof(CornerRectangle)} - 草图-绘制边角矩形（对角点坐标），5参数，草图名称，x1,y1,x2,y2");
+            Console.WriteLine($"{nameof(CenterRectangle)} - 草图-绘制中心矩形（中心点和角点），5参数，草图名称，x1,y1,x2,y2");
+            Console.WriteLine($"{nameof(ThreePointCornerRectangle)} - 草图-绘制3点边角矩形（矩形的三个角点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+            Console.WriteLine($"{nameof(ThreePointCenterRectangle)} - 草图-绘制3点中心矩形（中心点、边中点、边端点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+            Console.WriteLine($"{nameof(Parallelogram)} - 草图-绘制平行四边形（平行四边形的三个角点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+
+            //Console.WriteLine($"{nameof(CreatePolygon)} - 创建多边形");
 
         }
 
@@ -37,22 +43,22 @@ namespace ConsoleAppDi
         /// Creates a new document based on the specified template.
         /// </summary>
         /// <param name="type"></param>
-        public void NewDocument(string type)
+        public void NewDoc(string type)
         {
             string template = string.Empty;
             int size = 0;
             //需要预先设置模板，否则获取的为空
-            switch (type)
+            switch (type.ToLower())
             {
-                case "Part":
+                case "prt":
                     template = _swApp.GetUserPreferenceStringValue((int)swUserPreferenceStringValue_e
                         .swDefaultTemplatePart);
                     break;
-                case "Assembly":
+                case "asm":
                     template = _swApp.GetUserPreferenceStringValue((int)swUserPreferenceStringValue_e
                         .swDefaultTemplateAssembly);
                     break;
-                case "Drawing":
+                case "drw":
                     template = _swApp.GetUserPreferenceStringValue((int)swUserPreferenceStringValue_e
                         .swDefaultTemplateDrawing);
                     size = (int)swDwgPaperSizes_e.swDwgPaperA4size;
@@ -267,10 +273,87 @@ namespace ConsoleAppDi
             });
         }
 
+        /// <summary>
+        /// 创建一个中心矩形
+        /// Creates a center rectangle. 
+        /// </summary>
+        public void CenterRectangle(string sketchName, string x1, string y1, string x2, string y2)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                //前三个参数为中心点，后三个参数为任意一个角点
+                var vSkLines = swSketchManager.CreateCenterRectangle(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
 
 
+        /// <summary>
+        /// 按照任意角度创建3点边角矩形
+        /// Creates a 3-point corner rectangle at any angle. 
+        /// </summary>
+        public void ThreePointCornerRectangle(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                //三组角点的坐标
+                var vSkLines = swSketchManager.Create3PointCornerRectangle(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, double.Parse(x3), double.Parse(y3), 0) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
 
+        /// <summary>
+        /// 按照任意角度创建3点中心矩形
+        /// Creates a 3-point center rectangle at any angle. 
+        /// </summary>
+        public void ThreePointCenterRectangle(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                //前三个参数为中心点坐标，中间三个参数为任意一条边的中点，后三个参数为该边的端点坐标
+                var vSkLines = swSketchManager.Create3PointCenterRectangle(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, double.Parse(x3), double.Parse(y3), 0) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
 
+        /// <summary>
+        /// 创建一个平行四边形
+        /// Creates a parallelogram. 
+        /// </summary>
+        public void Parallelogram(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                //平行四边形的三个角点
+                var vSkLines = swSketchManager.CreateParallelogram(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, double.Parse(x3), double.Parse(y3), 0) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
+        
 
         //打工人要画图
         public void CreatePolygon()
