@@ -20,7 +20,7 @@ namespace ConsoleAppDi
         /// </summary>
         public void Help()
         {
-            
+
             Console.WriteLine($"{nameof(NewDoc)} - 新建文档，1参数，文档类型（prt，asm，drw）");
             Console.WriteLine($"{nameof(Save)} - 保存文档");
             Console.WriteLine($"{nameof(SaveAs)} - 另存为文档，1参数，文档另存为完整地址（后缀：零件.sldprt，装配体.sldasm,工程图.slddrw）");
@@ -33,6 +33,13 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(ThreePointCornerRectangle)} - 草图-绘制3点边角矩形（矩形的三个角点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
             Console.WriteLine($"{nameof(ThreePointCenterRectangle)} - 草图-绘制3点中心矩形（中心点、边中点、边端点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
             Console.WriteLine($"{nameof(Parallelogram)} - 草图-绘制平行四边形（平行四边形的三个角点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+            Console.WriteLine($"{nameof(Circle)} - 草图-绘制圆（圆心和圆周上一点），5参数，草图名称，x1,y1,x2,y2");
+            Console.WriteLine($"{nameof(CircleByRadius)} - 草图-绘制半径圆（圆心和半径），4参数，草图名称，x1,y1,r");
+            Console.WriteLine($"{nameof(PerimeterCircle)} - 草图-绘制周边圆（周长上任意三点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+
+
+
+
 
             //Console.WriteLine($"{nameof(CreatePolygon)} - 创建多边形");
 
@@ -353,7 +360,56 @@ namespace ConsoleAppDi
                 }
             });
         }
-        
+
+        /// <summary>
+        /// 根据圆心和圆周上一点绘制圆
+        /// Creates a circle based on a center point and a point on the circle. 
+        /// </summary>
+        public void Circle(string sketchName, string x1, string y1, string x2, string y2)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //前三个参数为圆心点坐标，后三个参数为圆周上任意一点的坐标
+                var skSegment = swSketchManager.CreateCircle(double.Parse(x1), double.Parse(y1),0, double.Parse(x2), double.Parse(y2),0);
+
+                if (skSegment!=null) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()},Type:{typeof(swSketchSegments_e).GetEnumName(skSegment.GetType())}");
+            });
+        }
+
+        /// <summary>
+        /// 根据圆心和半径绘制圆
+        /// Creates a circle based on a center point and a specified radius.  
+        /// </summary>
+        public void CircleByRadius(string sketchName, string x1, string y1, string radius)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //前三个参数为圆心点坐标，最后一个为半径值
+                var skSegment = swSketchManager.CreateCircleByRadius(double.Parse(x1), double.Parse(y1), 0, double.Parse(radius));
+
+                if (skSegment!=null) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()},Type:{typeof(swSketchSegments_e).GetEnumName(skSegment.GetType())}");
+            });
+        }
+
+        /// <summary>
+        /// 根据圆周上任意3点坐标绘制周边圆
+        /// Draws a 3-point perimeter arc.  
+        /// </summary>
+        public void PerimeterCircle(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //圆周上任意3点坐标
+                var skArc = swSketchManager.PerimeterCircle(double.Parse(x1), double.Parse(y1), double.Parse(x2), double.Parse(y2), double.Parse(x3), double.Parse(y3)) as ISketchArc;
+                if (skArc!=null) Console.WriteLine($"Radius:{skArc.GetRadius()}");
+            });
+        }
+
+
+
 
         //打工人要画图
         public void CreatePolygon()
