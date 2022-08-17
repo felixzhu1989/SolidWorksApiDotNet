@@ -36,12 +36,14 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(Circle)} - 草图-绘制圆（圆心和圆周上一点），5参数，草图名称，x1,y1,x2,y2");
             Console.WriteLine($"{nameof(CircleByRadius)} - 草图-绘制半径圆（圆心和半径），4参数，草图名称，x1,y1,r");
             Console.WriteLine($"{nameof(PerimeterCircle)} - 草图-绘制周边圆（周长上任意三点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+            Console.WriteLine($"{nameof(Arc)} - 草图-绘制圆弧（中心点、起点、终点、方向），8参数，草图名称，x1,y1,x2,y2,x3,y3,d(1逆时针，-1顺时针)");
+            Console.WriteLine($"{nameof(TangentArc)} - 草图-绘制切线弧（起点、终点、切线弧类型），6参数，草图名称，x1,y1,x2,y2,type(1前，3后，2左，4右)");
+            Console.WriteLine($"{nameof(ThreePointArc)} - 草图-绘制3点圆弧（起点、终点、圆弧上任意一点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
+            Console.WriteLine($"{nameof(Polygon)} - 草图-绘制多边形（中心点、顶点、显示构造圆类型），7参数，草图名称，x1,y1,x2,y2,sides,inscribed(true内切构造圆，false外接构造圆)");
 
 
 
-
-
-            //Console.WriteLine($"{nameof(CreatePolygon)} - 创建多边形");
+            
 
         }
 
@@ -409,26 +411,79 @@ namespace ConsoleAppDi
         }
 
 
-
-
-        //打工人要画图
-        public void CreatePolygon()
+        /// <summary>
+        /// 根据中心点、起点、终点、方向创建圆弧
+        /// Creates an arc based on a center point, a start point, an end point, and a direction. 
+        /// </summary>
+        public void Arc(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3,string d)
         {
             if (_swApp==null) return;
-
-            var swModel = (ModelDoc2)_swApp.NewPart();
-            //var swModelDocExt = swModel.Extension;
-            var swSketchMgr = swModel.SketchManager;
-            swSketchMgr.InsertSketch(false);
-            var polygon = (Object[])swSketchMgr.CreatePolygon(0,
-                 0, 0, 0.1, 0, 0, 5, true);
-            //true表示外切，false表示内接
-
-
-            swModel.ViewZoomtofit2();
-            // Set the selection mode to default
-            swModel.SetPickMode();
-            swSketchMgr.InsertSketch(true);
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //中心点、起点、终点、方向（1逆时针，-1顺时针）
+                var skArc = swSketchManager.CreateArc(double.Parse(x1), double.Parse(y1), 0,double.Parse(x2), double.Parse(y2),0, double.Parse(x3), double.Parse(y3),0,short.Parse(d)) as ISketchArc;
+                if (skArc!=null) Console.WriteLine($"Radius:{skArc.GetRadius()}");
+            });
         }
+
+        /// <summary>
+        /// 创建切线弧
+        /// Creates a tangent arc.  
+        /// </summary>
+        public void TangentArc(string sketchName, string x1, string y1, string x2, string y2,  string arcType)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //起点、终点、切线弧类型（1前，3后，2左，4右）
+                var skArc = swSketchManager.CreateTangentArc(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0,  int.Parse(arcType)) as ISketchArc;
+                if (skArc!=null) Console.WriteLine($"Radius:{skArc.GetRadius()}");
+            });
+        }
+
+
+        /// <summary>
+        /// 起点、终点、圆弧上任意一点绘制3点圆弧
+        /// Creates a 3-point arc. 
+        /// </summary>
+        public void ThreePointArc(string sketchName, string x1, string y1, string x2, string y2, string x3, string y3)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //起点、终点、圆弧上任意一点
+                var skArc = swSketchManager.Create3PointArc(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, double.Parse(x3), double.Parse(y3), 0) as ISketchArc;
+                if (skArc!=null) Console.WriteLine($"Radius:{skArc.GetRadius()}");
+            });
+        }
+
+
+        /// <summary>
+        /// 创建一个多边形
+        /// Creates a polygon in the active sketch. 
+        /// </summary>
+        public void Polygon(string sketchName, string x1, string y1, string x2, string y2, string sides, string inscribed)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //返回值是一个数组，Array of sketch segments that represent the edges created for this corner rectangle
+                //中心点，顶点，边数，显示构造圆类型（true内切构造圆，false外接构造圆）
+                var vSkLines = swSketchManager.CreatePolygon(double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, int.Parse(sides), bool.Parse(inscribed)) as object[];
+                //循环该数组
+                foreach (var skLine in vSkLines!)
+                {
+                    if (skLine is ISketchSegment skSegment) Console.WriteLine($"Name:{skSegment.GetName()},Length:{skSegment.GetLength()}");
+                }
+            });
+        }
+
+
+
+
+
+
+
+        
     }
 }
