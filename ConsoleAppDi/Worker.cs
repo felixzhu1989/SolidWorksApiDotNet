@@ -40,10 +40,10 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(TangentArc)} - 草图-绘制切线弧（起点、终点、切线弧类型），6参数，草图名称，x1,y1,x2,y2,type(1前，3后，2左，4右)");
             Console.WriteLine($"{nameof(ThreePointArc)} - 草图-绘制3点圆弧（起点、终点、圆弧上任意一点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
             Console.WriteLine($"{nameof(Polygon)} - 草图-绘制多边形（中心点、顶点、显示构造圆类型），7参数，草图名称，x1,y1,x2,y2,sides,inscribed(true内切构造圆，false外接构造圆)");
+            Console.WriteLine($"{nameof(Slot)} - 草图-绘制键槽（槽类型,尺寸标志类型，宽度，三个点坐标，中心弧方向，是否标注尺寸），\n12参数，草图名称，slotType(0直槽，1中心点直槽，2中心点弧槽，3为3点弧槽)，lengthType(0为弧中心点距离，1全长)，width,\nx1,y1,x2,y2,x3,y3,direction(1逆时针，-1顺时针),addDim(true标注，false不标注)");
 
 
 
-            
 
         }
 
@@ -478,12 +478,34 @@ namespace ConsoleAppDi
             });
         }
 
+        /// <summary>
+        /// 创建键槽草图
+        /// Creates a sketch slot. 
+        /// </summary>
+        public void Slot(string sketchName,string slotType,string lengthType, string width,string x1, string y1, string x2, string y2, string x3, string y3,string d,string addDim)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //第一个参数为槽类型，0直槽，1中心点直槽，2中心点弧槽，3为3点弧槽
+                //第二个参数为标注长度类型，0为弧中心点距离，1全长
+                //第三个参数为宽度
+                //三组点的坐标
+                //中心弧线的方向
+                //是否添加尺寸标注，true标注，false不标注
+                var skSlot = swSketchManager.CreateSketchSlot(int.Parse(slotType),int.Parse(lengthType),double.Parse(width),double.Parse(x1), double.Parse(y1), 0, double.Parse(x2), double.Parse(y2), 0, double.Parse(x3), double.Parse(y3), 0,int.Parse(d),bool.Parse(addDim));
+                if (skSlot != null)
+                {
+                    var centerPoint = skSlot.GetCenterPointHandle();
+                    Console.WriteLine($"CenterPoint:({centerPoint.X},{centerPoint.Y},{centerPoint.Z})");
+                }
+            });
+        }
 
 
 
 
 
 
-        
     }
 }
