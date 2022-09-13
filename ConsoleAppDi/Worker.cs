@@ -41,7 +41,8 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(ThreePointArc)} - 草图-绘制3点圆弧（起点、终点、圆弧上任意一点），7参数，草图名称，x1,y1,x2,y2,x3,y3");
             Console.WriteLine($"{nameof(Polygon)} - 草图-绘制多边形（中心点、顶点、显示构造圆类型），7参数，草图名称，x1,y1,x2,y2,sides,inscribed(true内切构造圆，false外接构造圆)");
             Console.WriteLine($"{nameof(Slot)} - 草图-绘制键槽（槽类型,尺寸标志类型，宽度，三个点坐标，中心弧方向，是否标注尺寸），\n12参数，草图名称，slotType(0直槽，1中心点直槽，2中心点弧槽，3为3点弧槽)，lengthType(0为弧中心点距离，1全长)，width,\nx1,y1,x2,y2,x3,y3,direction(1逆时针，-1顺时针),addDim(true标注，false不标注)");
-
+            Console.WriteLine($"{nameof(Point)} - 草图-绘制点（三个点坐标）3参数，草图名称，x,y");
+            Console.WriteLine($"{nameof(Spline)} - 草图-绘制样条曲线（点的个数）2参数，草图名称，n");
 
 
 
@@ -503,7 +504,58 @@ namespace ConsoleAppDi
         }
 
 
+        /// <summary>
+        /// 创建点
+        /// Creates a sketch point in the active 2D or 3D sketch. 
+        /// </summary>
+        public void Point(string sketchName,  string x, string y)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                var skPoint = swSketchManager.CreatePoint( double.Parse(x), double.Parse(y), 0 );
+                if (skPoint != null)
+                {
+                    Console.WriteLine($"CenterPoint:({skPoint.X},{skPoint.Y},{skPoint.Z})");
+                }
+            });
+        }
 
+        /// <summary>
+        /// 创建样条曲线,n为需要多少个点
+        /// Creates either a 2D spline or a spline constrained to a surface. 
+        /// </summary>
+        public void Spline(string sketchName, string n)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //PointData ，第一个参数[start_pt_x, start_pt_y, start_pt_z, end_pt_x, end_pt_y, end_pt_z]
+                double[] points = new double[int.Parse(n) * 3];//因为一个点有3个值xyz
+                //循环，使用随机数构造一个点
+                for (int i = 0; i < int.Parse(n); i++)
+                {
+                    var x = i;
+                    var y =3* Random.Shared.NextDouble();//NextDouble结果为0.0-1.0，我们让他振幅大一点，看结果可调整
+                    points[i*3] = x;
+                    points[i*3+1] = y;
+                    points[i*3+2] = 0;//Z取0，因为我们画2D草图
+                }
+                //和曲面相关的两个参数给null
+                //True to simulate natural ends, false to not; valid only for 2D splines ,末端曲率相关
+                //最后一个参数Status， empty for 2D splines ，2D时是空的，因此用下划线忽略他
+                //返回值需要显式转换为ISketchSegment类型
+                var skSpline = swSketchManager.CreateSpline3(points,null,null,true,out _) as ISketchSegment;
+                if (skSpline != null)
+                {
+                    //获取它的类型swSketchSegments_e
+                    Console.WriteLine($"SegmentType:{typeof(swSketchSegments_e).GetEnumName(skSpline.GetType())}");
+                }
+            });
+        }
+
+        //下次讲equation driven curve,方程式驱动曲线，x^2,-5,5 | sin(x),0,2pi
+        //今天就到这里，拜拜
 
 
 
