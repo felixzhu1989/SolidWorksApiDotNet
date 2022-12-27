@@ -43,7 +43,10 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(Slot)} - 草图-绘制键槽（槽类型,尺寸标志类型，宽度，三个点坐标，中心弧方向，是否标注尺寸），\n12参数，草图名称，slotType(0直槽，1中心点直槽，2中心点弧槽，3为3点弧槽)，lengthType(0为弧中心点距离，1全长)，width,\nx1,y1,x2,y2,x3,y3,direction(1逆时针，-1顺时针),addDim(true标注，false不标注)");
             Console.WriteLine($"{nameof(Point)} - 草图-绘制点（三个点坐标）3参数，草图名称，x,y");
             Console.WriteLine($"{nameof(Spline)} - 草图-绘制样条曲线（点的个数）2参数，草图名称，n");
-
+            //EquationSpline Sketch1 x^2 -5 5
+            Console.WriteLine($"{nameof(EquationSpline)} - 草图-绘制方程式驱动曲线，4参数，草图名称，y方程式，起始区间，终止区间");
+            Console.WriteLine($"{nameof(Ellipse)} - 草图-绘制完整椭圆，7参数，草图名称，中心点x，中心点y，长轴点x，长轴点y，短轴点x，短轴点y");
+            Console.WriteLine($"{nameof(EllipticalArc)} - 草图-绘制部分椭圆，12参数，草图名称，中心点x，中心点y，长轴点x，长轴点y，短轴点x，短轴点y，起点x，起点y，终点x，终点y，方向（1逆时针，-1顺时针）");
 
 
         }
@@ -554,10 +557,64 @@ namespace ConsoleAppDi
             });
         }
 
-        //下次讲equation driven curve,方程式驱动曲线，x^2,-5,5 | sin(x),0,2pi
-        //今天就到这里，拜拜
 
+        /// <summary>
+        /// 创建方程式驱动曲线
+        /// Creates an equation-driven 2D explicit or parametric curve or a 3D parametric curve. 
+        /// </summary>
+        public void EquationSpline(string sketchName, string yEquation,string start,string end)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //2D explicit curve:
+                //A parabola    y = x^2
+                //CreateEquationSpline2("", "x^2", "", "-5", "5", False, 0, 0, 0, True, True)
+                //输入命令：EquationSpline Sketch1 x^2 -5 5
+                var skSpline =  swSketchManager.CreateEquationSpline2("", yEquation, "", start, end, false, 0, 0, 0, true, true);
+                if (skSpline != null)
+                {
+                    skSpline.GetEquationParameters2(out _, out string yExpression, out _, out double rangeStart, out double rangeEnd, out _, out _, out _, out _, out _, out _);
+                    Console.WriteLine($"Expression:{yExpression}\nStart:{rangeStart}\nEnd:{rangeEnd}");
+                }
+            });
+        }
+        
+        /// <summary>
+        /// 使用指定的中心点、长轴点和短轴点创建椭圆。
+        /// Creates an ellipse using the specified center, major-axis, and minor-axis points. 
+        /// </summary>
+        public void Ellipse(string sketchName, string xCenter, string yCenter, string xMajor, string yMajor, string xMinor, string yMinor)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //中心点，长轴点，短轴点
+                //swModel.SketchManager.CreateEllipse(CtrPt.X, CtrPt.Y, 0, MajPt.X, MajPt.Y, 0, CtrPt.X + pointvar[0], CtrPt.Y + pointvar[1], 0);
+               var swSegment= swSketchManager.CreateEllipse(double.Parse(xCenter), double.Parse(yCenter), 0, double.Parse(xMajor), double.Parse(yMajor), 0, double.Parse(xMinor), double.Parse(yMinor), 0);
+               if (swSegment != null)
+               {
+                   Console.WriteLine($"Type:{typeof(swSketchSegmentType_e).GetEnumName(swSegment.GetType())}");
+               }
+            });
+        }
 
-
+        /// <summary>
+        /// 在给定一个中心点的情况下创建一个偏椭圆，两个点指定长轴和短轴，两个点定义椭圆起点和终点。
+        /// Creates a partial ellipse given a center point, two points that specify the major and minor axis, and two points that define the elliptical start and end points.  
+        /// </summary>
+        public void EllipticalArc(string sketchName, string xCenter, string yCenter, string xMajor, string yMajor, string xMinor, string yMinor,string xStart,string yStart,string xEnd,string yEnd,string direction)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //中心点，长轴点，短轴点，起点坐标，终点坐标，方向（1逆时针，-1顺时针）
+                var swSegment = swSketchManager.CreateEllipticalArc(double.Parse(xCenter), double.Parse(yCenter), 0, double.Parse(xMajor), double.Parse(yMajor), 0, double.Parse(xMinor), double.Parse(yMinor), 0,double.Parse(xStart),double.Parse(yStart),0,double.Parse(xEnd),double.Parse(yEnd),0,short.Parse(direction));
+                if (swSegment != null)
+                {
+                    Console.WriteLine($"Type:{typeof(swSketchSegmentType_e).GetEnumName(swSegment.GetType())}");
+                }
+            });
+        }
     }
 }
