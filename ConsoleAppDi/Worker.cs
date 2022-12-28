@@ -47,6 +47,8 @@ namespace ConsoleAppDi
             Console.WriteLine($"{nameof(EquationSpline)} - 草图-绘制方程式驱动曲线，4参数，草图名称，y方程式，起始区间，终止区间");
             Console.WriteLine($"{nameof(Ellipse)} - 草图-绘制完整椭圆，7参数，草图名称，中心点x，中心点y，长轴点x，长轴点y，短轴点x，短轴点y");
             Console.WriteLine($"{nameof(EllipticalArc)} - 草图-绘制部分椭圆，12参数，草图名称，中心点x，中心点y，长轴点x，长轴点y，短轴点x，短轴点y，起点x，起点y，终点x，终点y，方向（1逆时针，-1顺时针）");
+            Console.WriteLine($"{nameof(Parabola)} - 草图-绘制抛物线，7参数，草图名称，焦点x，焦点y，顶点x，顶y，起点x，终点x");
+            Console.WriteLine($"{nameof(Conic)} - 草图-绘制抛物线，7参数，草图名称，焦点x，焦点y，顶点x，顶y，起点x，终点x");
 
 
         }
@@ -610,6 +612,58 @@ namespace ConsoleAppDi
             {
                 //中心点，长轴点，短轴点，起点坐标，终点坐标，方向（1逆时针，-1顺时针）
                 var swSegment = swSketchManager.CreateEllipticalArc(double.Parse(xCenter), double.Parse(yCenter), 0, double.Parse(xMajor), double.Parse(yMajor), 0, double.Parse(xMinor), double.Parse(yMinor), 0,double.Parse(xStart),double.Parse(yStart),0,double.Parse(xEnd),double.Parse(yEnd),0,short.Parse(direction));
+                if (swSegment != null)
+                {
+                    Console.WriteLine($"Type:{typeof(swSketchSegmentType_e).GetEnumName(swSegment.GetType())}");
+                }
+            });
+        }
+
+        /// <summary>
+        /// 创建抛物线
+        /// Creates a parabola in the active sketch.  
+        /// </summary>
+        public void Parabola(string sketchName, string xFocus, string yFocus, string xApex, string yApex, string xStart, string xEnd)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //焦点坐标，顶点坐标，起点坐标，终点坐标
+                //x^2=2py,y=x^2/(2*p)
+                //焦点坐标(0,p/2),(xFocus,yFocus) p=2*yFocus
+                double p = 2 * double.Parse(yFocus);
+                //计算得出起点和终点的坐标
+                double yStart = Math.Pow(double.Parse(xStart), 2) / (2 * p);
+                double yEnd = Math.Pow(double.Parse(xEnd), 2) / (2 * p);
+
+                var swSegment = swSketchManager.CreateParabola(double.Parse(xFocus), double.Parse(yFocus), 0, double.Parse(xApex), double.Parse(yApex), 0, double.Parse(xStart), yStart, 0, double.Parse(xEnd), yEnd, 0);
+                if (swSegment != null)
+                {
+                    Console.WriteLine($"Type:{typeof(swSketchSegmentType_e).GetEnumName(swSegment.GetType())}");
+                }
+            });
+        }
+
+
+        /// <summary>
+        /// 创建圆锥曲线
+        /// Creates a conic curve in the active sketch. 
+        /// </summary>
+        public void Conic(string sketchName, string xFocus, string yFocus, string xApex, string yApex, string xStart, string xEnd)
+        {
+            if (_swApp==null) return;
+            _swApp.EditSketch(sketchName, (swSketchManager) =>
+            {
+                //抛物线是圆锥曲线之一，因此使用抛物线方程的参数也可以
+                //焦点坐标，顶点坐标，起点坐标，终点坐标
+                //x^2=2py,y=x^2/(2*p)
+                //焦点坐标(0,p/2),(xFocus,yFocus) p=2*yFocus
+                double p = 2 * double.Parse(yFocus);
+                //计算得出起点和终点的坐标
+                double yStart = Math.Pow(double.Parse(xStart), 2) / (2 * p);
+                double yEnd = Math.Pow(double.Parse(xEnd), 2) / (2 * p);
+
+                var swSegment = swSketchManager.CreateConic(double.Parse(xFocus), double.Parse(yFocus), 0, double.Parse(xApex), double.Parse(yApex), 0, double.Parse(xStart), yStart, 0, double.Parse(xEnd), yEnd, 0);
                 if (swSegment != null)
                 {
                     Console.WriteLine($"Type:{typeof(swSketchSegmentType_e).GetEnumName(swSegment.GetType())}");
