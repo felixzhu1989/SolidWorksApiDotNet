@@ -202,6 +202,51 @@ namespace LearnSolidWorksApi
             Console.WriteLine(boolStatus);
             ViewZoomAndExitSketch();
         }
+        /// <summary>
+        /// 镜像草图实体
+        /// </summary>
+        public void SketchMirror()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
 
+            //中心线
+            SwSketchMgr.CreateCenterLine(0, 0, 0, 0, 1, 0);
+            //圆，作为被镜像的草图实体
+            SwSketchMgr.CreateCircleByRadius(-0.5, 0.5, 0, 0.4);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            //选择中心线，标记为2
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 2, null, 0);
+            //选择被镜像的草图，标记为1
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, true, 1, null, 0);
+
+            //镜像草图
+            SwModel.SketchMirror();
+
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 创建草图阵列
+        /// </summary>
+        public void CreateLinearSketchPattern()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            //绘制被阵列的草图，也叫种子
+            SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+            //选择草图图元
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            //创建线性草图阵列
+           var boolStatus= SwSketchMgr.CreateLinearSketchStepAndRepeat(3, 1, 1, 0, 0, 0, "", true, false, false, true, false);
+
+           Console.WriteLine($"创建阵列：{boolStatus}");
+            ViewZoomAndExitSketch();
+        }
     }
 }

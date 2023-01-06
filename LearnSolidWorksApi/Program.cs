@@ -17,4 +17,9 @@ EditSketch editSketch=new EditSketch(swApp);
 //延伸草图实体
 //editSketch.SketchExtend();
 //偏移草图实体
-editSketch.SketchOffset();
+//editSketch.SketchOffset();
+//镜像草图实体
+//editSketch.SketchMirror();
+//创建线性草图阵列
+editSketch.CreateLinearSketchPattern();
+
