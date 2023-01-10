@@ -90,6 +90,9 @@ namespace LearnSolidWorksApi
             SwSketchMgr.InsertSketch(true);
         }
 
+        /// <summary>
+        /// 在前视基准平面上绘制草图
+        /// </summary>
         public void SketchOnFrontPlane()
         {
             //选择前视基准平面，插入草图
@@ -98,6 +101,9 @@ namespace LearnSolidWorksApi
             SwSketchMgr.InsertSketch(true);
         }
 
+        /// <summary>
+        /// 调整视图并退出草图编辑
+        /// </summary>
         public void ViewZoomAndExitSketch()
         {
             //调整视图
@@ -106,6 +112,7 @@ namespace LearnSolidWorksApi
             //退出草图编辑
             SwSketchMgr.InsertSketch(true);
         }
+
         /// <summary>
         /// 剪裁草图实体
         /// </summary>
@@ -130,6 +137,7 @@ namespace LearnSolidWorksApi
 
             ViewZoomAndExitSketch();
         }
+
         /// <summary>
         /// 延伸草图实体
         /// </summary>
@@ -159,7 +167,7 @@ namespace LearnSolidWorksApi
         {
             NewDocument();
             SketchOnFrontPlane();
-            
+
             //原始草图
             SwSketchMgr.CreateLine(-0.5, 0.75, 0, -0.25, -0.5, 0);
             SwSketchMgr.CreateLine(-0.75, -1.25, 0, 0.5, -1.25, 0);
@@ -202,6 +210,7 @@ namespace LearnSolidWorksApi
             Console.WriteLine(boolStatus);
             ViewZoomAndExitSketch();
         }
+
         /// <summary>
         /// 镜像草图实体
         /// </summary>
@@ -229,7 +238,7 @@ namespace LearnSolidWorksApi
         }
 
         /// <summary>
-        /// 创建草图阵列
+        /// 创建线性草图阵列
         /// </summary>
         public void CreateLinearSketchPattern()
         {
@@ -238,15 +247,184 @@ namespace LearnSolidWorksApi
 
             //绘制被阵列的草图，也叫种子
             SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwSketchMgr.CreateLine(-0.2, 0, 0, 0.2, 0, 0);
             SwModel.ClearSelection2(true);
             SwModel.ViewZoomtofit2();
             //选择草图图元
             SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
             //创建线性草图阵列
-           var boolStatus= SwSketchMgr.CreateLinearSketchStepAndRepeat(3, 1, 1, 0, 0, 0, "", true, false, false, true, false);
+            var boolStatus = SwSketchMgr.CreateLinearSketchStepAndRepeat(3, 1, 1, 0, 0, 0, "", true, false, false, true, false);
 
-           Console.WriteLine($"创建阵列：{boolStatus}");
+            Console.WriteLine($"创建线性阵列：{boolStatus}");
             ViewZoomAndExitSketch();
         }
+
+        /// <summary>
+        /// 编辑线性草图阵列
+        /// </summary>
+        public void EditLinearSketchPattern()
+        {
+            CreateLinearSketchPattern();
+            //选择草图中种子
+            SwModelDocExt.SelectByID2("Arc1@Sketch1", "EXTSKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            //编辑草图
+            SwModel.EditSketch();
+            //编辑线性草图阵列,种子图元名阵列必须带下划线
+            //var boolStatus= SwSketchMgr.EditLinearSketchStepAndRepeat(5, 1, 1, 0, 0, 0, "", true, false, false, true, false, "Arc1_");
+
+            //增加y轴阵列，同时显示距离标注和数量标注
+            //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 0, 0, "", true, true, false, true, true, "Arc1_");
+            //？,显示两个阵列方向的夹角，
+            //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 0, 60*Math.PI/180, "", true, true, true, true, true, "Arc1_");
+            //x方向夹角，两个阵列方向都是相对与x轴的夹角
+            //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "", true, true, true, true, true, "Arc1_");
+
+            //删除实例,从左往右第3列，从下网上第2行
+            //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "(3,2)", true, true, true, true, true, "Arc1_");
+
+            //删除多个实例
+            //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "(3,2)(5,4)", true, true, true, true, true, "Arc1_");
+
+            //多个种子图元,每个图元后都要带下划线
+            var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "(3,2)(5,4)", true, true, true, true, true, "Arc1_Line1_");
+
+            Console.WriteLine($"编辑线性草图阵列：{boolStatus}");
+            //退出草图编辑
+            SwSketchMgr.InsertSketch(true);
+        }
+
+        /// <summary>
+        /// 创建圆周草图阵列
+        /// </summary>
+        public void CreateCircularSketchPattern()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            SwSketchMgr.CreateCircleByRadius(-1, 0, 0, 0.1);
+            SwSketchMgr.CreateLine(-1, -0.1, 0, -1, 0.1, 0);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+
+            var boolStatus = SwSketchMgr.CreateCircularSketchStepAndRepeat(0.5, 0, 3, 30 * Math.PI / 180, false, "", true, true, true);
+
+            Console.WriteLine($"创建圆周草图阵列：{boolStatus}");
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 编辑圆周草图阵列
+        /// </summary>
+        public void EditCircularSketchPattern()
+        {
+            CreateCircularSketchPattern();
+
+            SwModelDocExt.SelectByID2("Arc1@Sketch1", "EXTSKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModel.EditSketch();
+
+            //更改圆周阵列的半径
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 0, 3, 30 * Math.PI / 180, false, "", true, true, true,"Arc1_Line1_");
+
+            //更改起始阵列的旋转角度
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 3, 30 * Math.PI / 180, false, "", true, true, true, "Arc1_Line1_");
+
+            //更改阵列数量为5
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 30 * Math.PI / 180, false, "", true, true, true, "Arc1_Line1_");
+
+            //更改阵列间距为45度
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, false, "", true, true, true, "Arc1_Line1_");
+
+            //更改旋转草图，并没看见什么变化
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, true, "", true, true, true, "Arc1_Line1_");
+
+            //删除第三个阵列实例
+            //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, true, "(3)", true, true, true, "Arc1_Line1_");
+
+            //不显示半径，角度和数量标注
+            var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, true, "(3)", false, false, false, "Arc1_Line1_");
+
+            Console.WriteLine($"编辑圆周草图阵列：{boolStatus}");
+            SwSketchMgr.InsertSketch(true);
+        }
+        
+        /// <summary>
+        /// 移动或复制草图实体
+        /// </summary>
+        public void MoveOrCopy()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwSketchMgr.CreateLine(0, -0.2, 0, 0, 0.2, 0);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //移动草图实体
+            //SwModelDocExt.MoveOrCopy(false,1,false,0,0,0,1,1,0);
+            //保持约束关系,如果移动草图时，保留草图关系，可能会移不动草图，谨慎使用
+            //SwModelDocExt.MoveOrCopy(false, 1, true, 0, 0, 0, 1, 1, 0);
+            //移动两次,应该到2，2位置，但是并没有
+            //SwModelDocExt.MoveOrCopy(false, 2, false, 0, 0, 0, 1, 1, 0);
+
+            //复制草图
+            //SwModelDocExt.MoveOrCopy(true, 1, false, 0, 0, 0, 1, 1, 0);
+            //复制2个草图
+            //SwModelDocExt.MoveOrCopy(true, 2, false, 0, 0, 0, 1, 1, 0);
+            //保留约束，不明显，我们多画一个草图
+            //SwModelDocExt.MoveOrCopy(true, 2, true, 0, 0, 0, 1, 1, 0);
+            //没有草图约束
+            SwModelDocExt.MoveOrCopy(true, 2, false, 0, 0, 0, 1, 1, 0);
+
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 旋转或复制草图实体
+        /// </summary>
+        public void RotateOrCopy()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            SwSketchMgr.CreateCornerRectangle(-0.2, -0.2, 0, 0.2, 0.2, 0);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Line1","SKETCHSEGMENT",0,0,0,false,0,null,0);
+            SwModelDocExt.SelectByID2("Line2","SKETCHSEGMENT",0,0,0,true,0,null,0);
+            SwModelDocExt.SelectByID2("Line3","SKETCHSEGMENT",0,0,0,true,0,null,0);
+            SwModelDocExt.SelectByID2("Line4","SKETCHSEGMENT",0,0,0,true,0,null,0);
+
+
+            //基点0，0，0
+            //SwModelDocExt.RotateOrCopy(false,1,false,0,0,0,0,0,1,45*Math.PI/180);
+
+            //基点0.2, 0.2, 0
+            //SwModelDocExt.RotateOrCopy(false, 1, false, 0.2, 0.2, 0, 0, 0, 1, 45*Math.PI/180);
+
+            //改变旋转角度，草图实体是逆时针旋转
+            //SwModelDocExt.RotateOrCopy(false, 1, false, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
+
+            //复制
+            //SwModelDocExt.RotateOrCopy(true, 1, false, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
+
+            //复制,2个
+            //SwModelDocExt.RotateOrCopy(true, 2, false, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
+
+            //保留约束关系
+            SwModelDocExt.RotateOrCopy(true, 2, true, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
+
+            ViewZoomAndExitSketch();
+        }
+
+
+
     }
 }
