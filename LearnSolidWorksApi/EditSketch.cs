@@ -9,10 +9,22 @@ namespace LearnSolidWorksApi
         public ModelDocExtension SwModelDocExt { get; set; }
         public SketchManager SwSketchMgr { get; set; }
         private readonly SldWorks _swApp;
+
         public EditSketch(SldWorks swApp)
         {
             _swApp = swApp;
         }
+
+        /// <summary>
+        /// 获取当前活动的文档
+        /// </summary>
+        public void ActiveDoc()
+        {
+            SwModel = (ModelDoc2)_swApp.ActiveDoc;
+            SwModelDocExt = SwModel.Extension;
+            SwSketchMgr = SwModel.SketchManager;
+        }
+
         /// <summary>
         /// 新建零件
         /// </summary>
@@ -22,7 +34,7 @@ namespace LearnSolidWorksApi
             var defaultTemplate =
                 _swApp.GetUserPreferenceStringValue((int)swUserPreferenceStringValue_e.swDefaultTemplatePart);
             //使用默认模板新建零件
-            SwModel=(_swApp.NewDocument(defaultTemplate, 0, 0, 0) as ModelDoc2)!;
+            SwModel = (_swApp.NewDocument(defaultTemplate, 0, 0, 0) as ModelDoc2)!;
             SwModelDocExt = SwModel.Extension;
             SwSketchMgr = SwModel.SketchManager;
         }
@@ -69,9 +81,11 @@ namespace LearnSolidWorksApi
             SwModel.ClearSelection2(true);
             //选择两条边
             //第一条边
-            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", -0.9, 1, 0, false, 1, null, (int)swSelectOption_e.swSelectOptionDefault);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", -0.9, 1, 0, false, 1, null,
+                (int)swSelectOption_e.swSelectOptionDefault);
             //第二条边，加选
-            SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", -1, 0.9, 0, true, 1, null, (int)swSelectOption_e.swSelectOptionDefault);
+            SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", -1, 0.9, 0, true, 1, null,
+                (int)swSelectOption_e.swSelectOptionDefault);
 
             //创建草图倒角
             //距离角度,角度换算成弧度,注意D1标注在后选的边上
@@ -128,9 +142,11 @@ namespace LearnSolidWorksApi
 
             //选择两条直线
             //第一条直线
-            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 1, 0, 0, false, 0, null, (int)swSelectOption_e.swSelectOptionDefault);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 1, 0, 0, false, 0, null,
+                (int)swSelectOption_e.swSelectOptionDefault);
             //第二条直线，加选
-            SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", 0, 1, 0, true, 0, null, (int)swSelectOption_e.swSelectOptionDefault);
+            SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", 0, 1, 0, true, 0, null,
+                (int)swSelectOption_e.swSelectOptionDefault);
             //剪裁草图实体，以边角的形式
             var boolStatus = SwSketchMgr.SketchTrim((int)swSketchTrimChoice_e.swSketchTrimCorner, 0, 0, 0);
             Console.WriteLine(boolStatus);
@@ -205,7 +221,8 @@ namespace LearnSolidWorksApi
             //var boolStatus = SwSketchMgr.SketchOffset2(0.5, true, false, (int)swSkOffsetCapEndType_e.swSkOffsetArcCaps, (int)swSkOffsetMakeConstructionType_e.swSkOffsetMakeOffsConstruction, true);
 
             //将两者都设置为构造线
-            var boolStatus = SwSketchMgr.SketchOffset2(0.5, true, false, (int)swSkOffsetCapEndType_e.swSkOffsetArcCaps, (int)swSkOffsetMakeConstructionType_e.swSkOffsetMakeBothConstruction, true);
+            var boolStatus = SwSketchMgr.SketchOffset2(0.5, true, false, (int)swSkOffsetCapEndType_e.swSkOffsetArcCaps,
+                (int)swSkOffsetMakeConstructionType_e.swSkOffsetMakeBothConstruction, true);
 
             Console.WriteLine(boolStatus);
             ViewZoomAndExitSketch();
@@ -254,7 +271,8 @@ namespace LearnSolidWorksApi
             SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
             SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
             //创建线性草图阵列
-            var boolStatus = SwSketchMgr.CreateLinearSketchStepAndRepeat(3, 1, 1, 0, 0, 0, "", true, false, false, true, false);
+            var boolStatus =
+                SwSketchMgr.CreateLinearSketchStepAndRepeat(3, 1, 1, 0, 0, 0, "", true, false, false, true, false);
 
             Console.WriteLine($"创建线性阵列：{boolStatus}");
             ViewZoomAndExitSketch();
@@ -287,7 +305,8 @@ namespace LearnSolidWorksApi
             //var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "(3,2)(5,4)", true, true, true, true, true, "Arc1_");
 
             //多个种子图元,每个图元后都要带下划线
-            var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10*Math.PI/180, 90*Math.PI/180, "(3,2)(5,4)", true, true, true, true, true, "Arc1_Line1_");
+            var boolStatus = SwSketchMgr.EditLinearSketchStepAndRepeat(5, 4, 1, 0.5, 10 * Math.PI / 180,
+                90 * Math.PI / 180, "(3,2)(5,4)", true, true, true, true, true, "Arc1_Line1_");
 
             Console.WriteLine($"编辑线性草图阵列：{boolStatus}");
             //退出草图编辑
@@ -310,7 +329,9 @@ namespace LearnSolidWorksApi
             SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
             SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
 
-            var boolStatus = SwSketchMgr.CreateCircularSketchStepAndRepeat(0.5, 0, 3, 30 * Math.PI / 180, false, "", true, true, true);
+            var boolStatus =
+                SwSketchMgr.CreateCircularSketchStepAndRepeat(0.5, 0, 3, 30 * Math.PI / 180, false, "", true, true,
+                    true);
 
             Console.WriteLine($"创建圆周草图阵列：{boolStatus}");
             ViewZoomAndExitSketch();
@@ -345,12 +366,13 @@ namespace LearnSolidWorksApi
             //var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, true, "(3)", true, true, true, "Arc1_Line1_");
 
             //不显示半径，角度和数量标注
-            var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180, true, "(3)", false, false, false, "Arc1_Line1_");
+            var boolStatus = SwSketchMgr.EditCircularSketchStepAndRepeat(1, 10 * Math.PI / 180, 5, 45 * Math.PI / 180,
+                true, "(3)", false, false, false, "Arc1_Line1_");
 
             Console.WriteLine($"编辑圆周草图阵列：{boolStatus}");
             SwSketchMgr.InsertSketch(true);
         }
-        
+
         /// <summary>
         /// 移动或复制草图实体
         /// </summary>
@@ -397,10 +419,10 @@ namespace LearnSolidWorksApi
             SwModel.ClearSelection2(true);
             SwModel.ViewZoomtofit2();
 
-            SwModelDocExt.SelectByID2("Line1","SKETCHSEGMENT",0,0,0,false,0,null,0);
-            SwModelDocExt.SelectByID2("Line2","SKETCHSEGMENT",0,0,0,true,0,null,0);
-            SwModelDocExt.SelectByID2("Line3","SKETCHSEGMENT",0,0,0,true,0,null,0);
-            SwModelDocExt.SelectByID2("Line4","SKETCHSEGMENT",0,0,0,true,0,null,0);
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line3", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            SwModelDocExt.SelectByID2("Line4", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
 
 
             //基点0，0，0
@@ -419,12 +441,188 @@ namespace LearnSolidWorksApi
             //SwModelDocExt.RotateOrCopy(true, 2, false, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
 
             //保留约束关系
-            SwModelDocExt.RotateOrCopy(true, 2, true, 0.2, 0.2, 0, 0, 0, 1, 30*Math.PI/180);
+            SwModelDocExt.RotateOrCopy(true, 2, true, 0.2, 0.2, 0, 0, 0, 1, 30 * Math.PI / 180);
 
             ViewZoomAndExitSketch();
         }
 
+        public void ViewSketchRelations()
+        {
+            //获取当前活动的文档
+            ActiveDoc();
 
+            //显示草图约束
+            var boolStatus = SwModelDocExt.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swViewSketchRelations,
+                (int)swUserPreferenceOption_e.swDetailingNoOptionSpecified, true);
+            //隐藏草图约束
+            //var boolStatus = SwModelDocExt.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swViewSketchRelations, (int)swUserPreferenceOption_e.swDetailingNoOptionSpecified, false);
+
+            Console.WriteLine(boolStatus);
+        }
+
+        /// <summary>
+        /// 添加草图约束关系
+        /// </summary>
+        public void SketchAddConstraints()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            SwSketchMgr.CreateLine(0.5, 0.5, 0, 1, 1, 0);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+
+            //SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+
+            //固定约束
+            //SwModel.SketchAddConstraints("sgFIXED");
+
+            //水平约束
+            //SwModel.SketchAddConstraints("sgHORIZONTAL2D");
+
+            //竖直约束
+            //SwModel.SketchAddConstraints("sgVERTICAL2D");
+
+
+            //重合约束(选择两个点)
+            ////原点
+            //SwModelDocExt.SelectByID2("Point1@Origin", "EXTSKETCHPOINT", 0, 0, 0, false, 0, null, 0);
+            ////线的端点（加选）
+            //SwModelDocExt.SelectByID2("Point2", "SKETCHPOINT", 0, 0, 0, true, 0, null, 0);
+            //SwModel.SketchAddConstraints("sgCOINCIDENT");
+
+            //中点约束
+            ////原点
+            //SwModelDocExt.SelectByID2("Point1@Origin", "EXTSKETCHPOINT", 0, 0, 0, false, 0, null, 0);
+            ////线（加选）
+            //SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //SwModel.SketchAddConstraints("sgATMIDDLE");
+
+
+            //SwSketchMgr.CreateLine(0, 0, 0, 0.4, 0.2, 0);
+            ////选择两条直线
+            //SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            //SwModelDocExt.SelectByID2("Line2", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //共线约束
+            //SwModel.SketchAddConstraints("sgCOLINEAR");
+            //平行约束
+            //SwModel.SketchAddConstraints("sgPARALLEL");
+            //垂直约束
+            //SwModel.SketchAddConstraints("sgPERPENDICULAR");
+            //等长约束
+            //SwModel.SketchAddConstraints("sgSAMELENGTH");
+
+
+            //SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            ////选择直线
+            //SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            ////选择圆（加选）
+            //SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //相切
+            //SwModel.SketchAddConstraints("sgTANGENT");
+            //相同曲线长度(圆变小了，周长和直线长度相等)
+            //SwModel.SketchAddConstraints("sgSAMECURVELENGTH");
+
+            //同心（画两个圆）
+            SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwSketchMgr.CreateCircleByRadius(1, 0, 0, 0.4);
+
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwModelDocExt.SelectByID2("Arc2", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //相切
+            //SwModel.SketchAddConstraints("sgTANGENT");
+            //同心
+            //SwModel.SketchAddConstraints("sgCONCENTRIC");
+            //同心共径（即同心半径又相等）
+            SwModel.SketchAddConstraints("sgCORADIAL");
+
+
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 标注草图尺寸
+        /// </summary>
+        public void AddDimension()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            //关闭输入尺寸弹窗
+            _swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate, false);
+
+            SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+
+            //SwModel.AddDimension2(0, 0, 0);
+            //SwModel.AddDimension2(0.2, 0.2, 0);
+
+            //SwModelDocExt.AddDimension(0, 0, 0, (int)swSmartDimensionDirection_e.swSmartDimensionDirection_Right);
+            SwModelDocExt.AddDimension(0.2, 0.2, 0, (int)swSmartDimensionDirection_e.swSmartDimensionDirection_Up);
+
+            //打开输入尺寸弹窗（恢复默认设置）
+            _swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate, true);
+
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 转换为构造线
+        /// </summary>
+        public void CreateConstructionGeometry()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+
+            SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwSketchMgr.CreateConstructionGeometry();
+
+            //再次选择并执行转换为构造线，会让原本是构造线的草图重新转换为非构造线
+            SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwSketchMgr.CreateConstructionGeometry();
+
+            ViewZoomAndExitSketch();
+        }
+
+        /// <summary>
+        /// 拆分草图实体
+        /// </summary>
+        public void SplitSegment()
+        {
+            NewDocument();
+            SketchOnFrontPlane();
+            //关闭草图捕捉
+            _swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swSketchInference,false);
+
+            ////拆分-封闭的草图
+            //SwSketchMgr.CreateCircleByRadius(0, 0, 0, 0.2);
+            //SwModel.ClearSelection2(true);
+            //SwModel.ViewZoomtofit2();
+
+            //SwModelDocExt.SelectByID2("Arc1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            //SwSketchMgr.SplitClosedSegment(-0.2, 0, 0, 0.2, 0, 0);
+
+            //拆分-非封闭的草图
+            SwSketchMgr.CreateLine(0, 0, 0, 0.2,0,0);
+            SwModel.ClearSelection2(true);
+            SwModel.ViewZoomtofit2();
+
+            SwModelDocExt.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            SwSketchMgr.SplitOpenSegment( 0.1, 0, 0);
+
+
+            //打开草图捕捉
+            _swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swSketchInference, true);
+            ViewZoomAndExitSketch();
+        }
 
     }
 }

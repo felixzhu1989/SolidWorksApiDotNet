@@ -31,5 +31,15 @@ EditSketch editSketch=new EditSketch(swApp);
 //移动或复制草图实体
 //editSketch.MoveOrCopy();
 //旋转复制草图实体
-editSketch.RotateOrCopy();
+//editSketch.RotateOrCopy();
+//隐藏显示草图约束关系
+//editSketch.ViewSketchRelations();
+//添加草图约束关系
+//editSketch.SketchAddConstraints();
+//标注草图尺寸
+//editSketch.AddDimension();
+//转换为构造线
+//editSketch.CreateConstructionGeometry();
+//拆分草图实体
+editSketch.SplitSegment();
 
