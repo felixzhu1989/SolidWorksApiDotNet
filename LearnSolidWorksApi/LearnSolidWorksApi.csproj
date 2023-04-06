@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SolidWorks.Interop.sldworks" Version="29.4.1" />
-    <PackageReference Include="SolidWorks.Interop.swconst" Version="29.4.1" />
+    <PackageReference Include="Visiativ.SOLIDWORKS.Interop" Version="31.1.0" />
   </ItemGroup>
 
 </Project>

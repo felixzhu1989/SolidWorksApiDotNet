@@ -7,7 +7,8 @@ SldWorks swApp = SolidWorksSingleton.GetApplication();
 //swApp.SendMsgToUser("Hello, SolidWorks!");
 Console.WriteLine("Hello, SolidWorks!");
 
-EditSketch editSketch=new EditSketch(swApp);
+#region 编辑草图
+//EditSketch editSketch=new EditSketch(swApp);
 //创建草图圆角
 //editSketch.CreateFillet();
 //创建草图倒角
@@ -41,5 +42,13 @@ EditSketch editSketch=new EditSketch(swApp);
 //转换为构造线
 //editSketch.CreateConstructionGeometry();
 //拆分草图实体
-editSketch.SplitSegment();
+//editSketch.SplitSegment(); 
+#endregion
 
+#region 编辑特征
+
+EditFeature feature = new EditFeature(swApp);
+feature.FeatureExtrusion();
+
+
+#endregion

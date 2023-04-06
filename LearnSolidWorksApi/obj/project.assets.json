@@ -2,60 +2,75 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "SolidWorks.Interop.sldworks/29.4.1": {
+      "Visiativ.SOLIDWORKS.Interop/31.1.0": {
         "type": "package",
         "compile": {
-          "lib/SolidWorks.Interop.sldworks.dll": {}
+          "lib/net6.0/SolidWorks.Interop.sldworks.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swcommands.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swconst.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swpublished.dll": {}
         },
         "runtime": {
-          "lib/SolidWorks.Interop.sldworks.dll": {}
-        }
-      },
-      "SolidWorks.Interop.swconst/29.4.1": {
-        "type": "package",
-        "compile": {
-          "lib/SolidWorks.Interop.swconst.dll": {}
-        },
-        "runtime": {
-          "lib/SolidWorks.Interop.swconst.dll": {}
+          "lib/net6.0/SolidWorks.Interop.sldworks.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swcommands.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swconst.dll": {},
+          "lib/net6.0/SolidWorks.Interop.swpublished.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "SolidWorks.Interop.sldworks/29.4.1": {
-      "sha512": "3GVBRKMzsvGyxm1fXSRU5mVNJb6QS1V5DVla0H88Bh5e8nCgR1HR3X37poda63MgpYW3Qip+6KaopCPjKZDS2A==",
+    "Visiativ.SOLIDWORKS.Interop/31.1.0": {
+      "sha512": "YJcUsYj0E9vNDLoGidbI4mLpoXlvC09fIQLjKK3SAalQzzht3TnGv6KfIsSzkWC1ZJ9tBBVj6I/uSuNIC+pndg==",
       "type": "package",
-      "path": "solidworks.interop.sldworks/29.4.1",
+      "path": "visiativ.solidworks.interop/31.1.0",
+      "hasTools": true,
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/SolidWorks.Interop.sldworks.dll",
-        "solidworks.interop.sldworks.29.4.1.nupkg.sha512",
-        "solidworks.interop.sldworks.nuspec"
-      ]
-    },
-    "SolidWorks.Interop.swconst/29.4.1": {
-      "sha512": "iuYOfUGwXgOL5yEZFH10fvOvRRcA4LTi4wpW50OJE6m8EY3xT1N+TXjJwj2yaGT9v+vC5LDWtC/WXW14FU+QaA==",
-      "type": "package",
-      "path": "solidworks.interop.swconst/29.4.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/SolidWorks.Interop.swconst.dll",
-        "solidworks.interop.swconst.29.4.1.nupkg.sha512",
-        "solidworks.interop.swconst.nuspec"
+        "images/Logo.jpg",
+        "lib/net20/SolidWorks.Interop.sldworks.dll",
+        "lib/net20/SolidWorks.Interop.swcommands.dll",
+        "lib/net20/SolidWorks.Interop.swconst.dll",
+        "lib/net20/SolidWorks.Interop.swpublished.dll",
+        "lib/net35/SolidWorks.Interop.sldworks.dll",
+        "lib/net35/SolidWorks.Interop.swcommands.dll",
+        "lib/net35/SolidWorks.Interop.swconst.dll",
+        "lib/net35/SolidWorks.Interop.swpublished.dll",
+        "lib/net40/SolidWorks.Interop.sldworks.dll",
+        "lib/net40/SolidWorks.Interop.swcommands.dll",
+        "lib/net40/SolidWorks.Interop.swconst.dll",
+        "lib/net40/SolidWorks.Interop.swpublished.dll",
+        "lib/net45/SolidWorks.Interop.sldworks.dll",
+        "lib/net45/SolidWorks.Interop.swcommands.dll",
+        "lib/net45/SolidWorks.Interop.swconst.dll",
+        "lib/net45/SolidWorks.Interop.swpublished.dll",
+        "lib/net48/SolidWorks.Interop.sldworks.dll",
+        "lib/net48/SolidWorks.Interop.swcommands.dll",
+        "lib/net48/SolidWorks.Interop.swconst.dll",
+        "lib/net48/SolidWorks.Interop.swpublished.dll",
+        "lib/net5.0/SolidWorks.Interop.sldworks.dll",
+        "lib/net5.0/SolidWorks.Interop.swcommands.dll",
+        "lib/net5.0/SolidWorks.Interop.swconst.dll",
+        "lib/net5.0/SolidWorks.Interop.swpublished.dll",
+        "lib/net6.0/SolidWorks.Interop.sldworks.dll",
+        "lib/net6.0/SolidWorks.Interop.swcommands.dll",
+        "lib/net6.0/SolidWorks.Interop.swconst.dll",
+        "lib/net6.0/SolidWorks.Interop.swpublished.dll",
+        "tools/install.ps1",
+        "visiativ.solidworks.interop.31.1.0.nupkg.sha512",
+        "visiativ.solidworks.interop.nuspec"
       ]
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "SolidWorks.Interop.sldworks >= 29.4.1",
-      "SolidWorks.Interop.swconst >= 29.4.1"
+      "Visiativ.SOLIDWORKS.Interop >= 31.1.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Administrator\\.nuget\\packages\\": {}
+    "C:\\Users\\Administrator\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -66,8 +81,12 @@
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
       "outputPath": "E:\\CSharp\\repos\\SolidWorksApiDotNet\\LearnSolidWorksApi\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -92,13 +111,9 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
-          "SolidWorks.Interop.sldworks": {
+          "Visiativ.SOLIDWORKS.Interop": {
             "target": "Package",
-            "version": "[29.4.1, )"
-          },
-          "SolidWorks.Interop.swconst": {
-            "target": "Package",
-            "version": "[29.4.1, )"
+            "version": "[31.1.0, )"
           }
         },
         "imports": [
@@ -117,30 +132,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1”而不是项目目标框架“net6.0”还原包“SolidWorks.Interop.sldworks 29.4.1”。此包可能与项目不完全兼容。",
-      "libraryId": "SolidWorks.Interop.sldworks",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1”而不是项目目标框架“net6.0”还原包“SolidWorks.Interop.swconst 29.4.1”。此包可能与项目不完全兼容。",
-      "libraryId": "SolidWorks.Interop.swconst",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    }
-  ]
+  }
 }
