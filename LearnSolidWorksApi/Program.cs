@@ -48,7 +48,9 @@ Console.WriteLine("Hello, SolidWorks!");
 #region 编辑特征
 
 EditFeature feature = new EditFeature(swApp);
-feature.FeatureExtrusion();
-
+//拉伸
+//feature.FeatureExtrusion();
+//旋转
+feature.FeatureRevolve();
 
 #endregion
