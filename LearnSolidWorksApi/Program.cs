@@ -51,6 +51,9 @@ EditFeature feature = new EditFeature(swApp);
 //拉伸
 //feature.FeatureExtrusion();
 //旋转
-feature.FeatureRevolve();
+//feature.FeatureRevolve();
+//扫描
+feature.Sweep();
+
 
 #endregion
