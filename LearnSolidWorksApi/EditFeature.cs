@@ -140,4 +140,152 @@ public class EditFeature
             //特征名：Sweep1，特征类型：Sweep
         }
     }
+
+    /// <summary>
+    /// 放样特征
+    /// </summary>
+    public void Loft()
+    {
+        var swModel = _swApp.CreatePart();
+
+        var swModelExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //绘制第一个轮廓
+        swModelExt.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateEllipse(0, 0, 0, 0.07, 0, 0, 0, 0.03, 0);//原点+长轴顶点+短轴顶点
+        swSketchMgr.InsertSketch(true);
+
+        //插入新的参考基准面，绘制第二个轮廓
+        swModel.ClearSelection2(true);
+        swModelExt.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swFeatMgr.InsertRefPlane(8, 0.07, 0, 0, 0, 0);//Distance，按照距离创建参考基准面
+        swModel.ClearSelection2(true);
+        //z坐标，因为是相对前视基准平面偏移的，xy为0
+        swModelExt.SelectByID2("", "PLANE", 0, 0, 0.07, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateEllipse(0, 0, 0, 0.05, 0, 0, 0, 0.01, 0);
+        swSketchMgr.InsertSketch(true);
+
+        //插入新的参考基准面，绘制第三个轮廓（与第二个一样）
+        swModel.ClearSelection2(true);
+        swModelExt.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swFeatMgr.InsertRefPlane(8, 0.14, 0, 0, 0, 0);//Distance，按照距离创建参考基准面
+        swModel.ClearSelection2(true);
+        //z坐标，因为是相对前视基准平面偏移的，xy为0
+        swModelExt.SelectByID2("", "PLANE", 0, 0, 0.14, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateEllipse(0, 0, 0, 0.06, 0, 0, 0, 0.02, 0);
+        swSketchMgr.InsertSketch(true);
+
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("",(int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+
+        //创建引导曲线
+        swModel.ClearSelection2(true);
+        //只用坐标选择，不用名字看看,Mark标记为1，选择第二个点起需要加选(椭圆的长轴顶点)
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT",0.07,0,0,false,1,null,0);
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT",0.05,0, 0.07, true,1,null,0);
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT",0.06,0, 0.14, true, 1,null,0);
+        swModel.Insert3DSplineCurve(false);//根据前面选择的三个点创建3D样条曲线
+
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT", -0.07, 0, 0, false, 1, null, 0);
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT", -0.05, 0, 0.07, true, 1, null, 0);
+        swModelExt.SelectByID2("", "EXTSKETCHPOINT", -0.06, 0, 0.14, true, 1, null, 0);
+        swModel.Insert3DSplineCurve(false);//根据前面选择的三个点创建3D样条曲线
+
+        //按照顺序选择轮廓(标记为1)和引导线(标记为2)，创建放样特征
+        swModel.ClearSelection2(true);
+        swModelExt.SelectByID2("", "SKETCH", 0.07, 0, 0, false, 1, null, 0);
+        swModelExt.SelectByID2("", "SKETCH", 0.05, 0, 0.07, true, 1, null, 0);//加选
+        swModelExt.SelectByID2("", "SKETCH", 0.06, 0, 0.14, true, 1, null, 0);
+
+        swModelExt.SelectByID2("", "REFERENCECURVES", 0.05, 0, 0.07, true, 2, null, 0);
+        swModelExt.SelectByID2("", "REFERENCECURVES", -0.05, 0, 0.07, true, 2, null, 0);
+
+       var swFeat= swFeatMgr.InsertProtrusionBlend(false //闭合放样
+            , true //保持相切
+            , false //获得更光滑的表面
+            , 1 //中间截面数量因子
+            , 0 //起始相切类型
+            , 0 //结束相切类型
+            , 1 //起始切线长度
+            , 1 //结束切线长度
+            , true //起始沿着相切方向
+            , true //结束沿着相切方向
+            , false //薄壁特征false表示不是薄壁
+            , 0 //壁厚1
+            , 0 //壁厚2
+            , 0 //壁厚类型
+            , true //合并实体
+            , true
+            , true
+        );//由于没有用InsertProtrusionBlend2方法，所以没有最后一个参数
+
+       if (swFeat != null)
+       {
+           Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Loft1，特征类型：Blend
+        }
+
+    }
+
+    /// <summary>
+    /// 拉伸切除
+    /// </summary>
+    public void FeatureCut()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //选择现有正方体上的面
+        swModel.ClearSelection2(true);
+        //以超出正方体的一个点，射向正方体某个面,从点(0,0,3)沿着z轴负向(0,0,-1)射线(圆柱形射线半径为0.001)，于射线相交的第一个面swSelFACES
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+
+        //创建键槽草图
+        swSketchMgr.InsertSketch(true);
+        //键槽类型，标注类型，宽度，圆心点1，圆心点2，圆端点,弧槽的绘制方向这里不适用，是否标注
+        swSketchMgr.CreateSketchSlot((int)swSketchSlotCreationType_e.swSketchSlotCreationType_line,
+            (int)swSketchSlotLengthType_e.swSketchSlotLengthType_FullLength,
+            0.5,
+            -0.25,0,0,
+            0.25,0,0,
+            0.25,0.25,0,
+            1,true);
+        //绘制完草图后，草图默认处于选中状态，可以直接拉伸切除
+       var swFeat= swFeatMgr.FeatureCut4(
+            true,false,false,//拉伸切除方向
+            (int)swEndConditions_e.swEndCondBlind,0,//终止条件，给定深度
+            1,0,//拉伸深度1米
+            false,false,false,false,0,0,//拔模没有
+            false,false,false,false,//偏移没有
+            false,//钣金正交切除，这里不是钣金，如果以后遇到钣金再讨论，非钣金取false
+            false,true,//多实体的特征范围
+            false,true,false,//装配体特征范围
+            (int)swStartConditions_e.swStartSketchPlane,0,false,//起始条件与偏移
+            false//钣金优化几何图形
+            );
+       if (swFeat != null)
+       {
+           Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName()}");
+            //特征名：Cut-Extrude1，特征类型：ICE（不知道是什么，这个时候请用GetTypeName()而不是GetTypeName2）
+            //特征名：Cut-Extrude1，特征类型：Cut
+        }
+
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
+
+
+
 }
