@@ -286,6 +286,59 @@ public class EditFeature
         swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 旋转切除
+    /// </summary>
+    public void RevolveCut()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //选择现有正方体上的面
+        swModel.ClearSelection2(true);
+        //以超出正方体的一个点，射向正方体某个面,从点(0,0,3)沿着z轴负向(0,0,-1)射线(圆柱形射线半径为0.001)，于射线相交的第一个面swSelFACES
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+
+        //创建草图，绘制中心线和圆
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCenterLine(0, 0, 0, 0, 1, 0);
+        swSketchMgr.CreateCircleByRadius(0.5, 1, 0, 0.2);
+        //绘制完草图后直接旋转切除，旋转切除的代码和旋转凸台差不多，只是切除参数改成了true
+        var swFeat = swFeatMgr.FeatureRevolve2(
+            true, true, false, //旋转结果,片体如何呢,薄壁先不要，再来看看薄壁切除特征
+            true,//旋转切除参数赋值为true
+            false, false,//旋转方向，改成顺时针看看,不能反转方向，否则就到外面去了，拉伸切除就失败了
+            //如果360度就无所谓了
+            (int)swEndConditions_e.swEndCondBlind, 0,//结束条件,
+            360*Math.PI/180d, 0,//旋转角度，270度看看，逆时针方向
+            false, false, 0, 0,//偏移相关
+            (int)swThinWallType_e.swThinWallOneDirection, 10d/1000d, 0,//薄壁特征相关
+            true, false, true//多实体相关参数
+        );
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //凸台时：特征名：Revolve1，特征类型：Revolution
+            //(非实体，片体)特征名：Surface-Revolve1，特征类型：RevolvRefSurf
+            //(薄壁特征)特征名：Revolve-Thin1，特征类型：RevolutionThin
+            //旋转切除时：特征名：Cut-Revolve1，特征类型：RevCut
+            //(薄壁切除特征)特征名：Cut-Revolve-Thin1，特征类型：RevCutThin
+            //(非实体，片体,不管是拉伸凸台还是切除，都不参与实体的布尔操作，保持独立片体)特征名：Surface-Revolve1，特征类型：RevolvRefSurf
+
+        }
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
+
+
+
 
 
 }
