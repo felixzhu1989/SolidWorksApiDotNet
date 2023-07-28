@@ -337,7 +337,74 @@ public class EditFeature
         swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 扫描切除
+    /// </summary>
+    public void SweepCut()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
 
+        //选择正面,使用SelectByRay
+        swModel.ClearSelection2(true);
+        //以超出正方体的一个点，射向正方体某个面,从点(0,0,3)沿着z轴负向(0,0,-1)射线(圆柱形射线半径为0.001)，于射线相交的第一个面swSelFACES
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        //创建草图，绘制草图圆
+        swSketchMgr.InsertSketch(true);
+        //注意编辑草图时，草图原点默认落在零件模型的原点，要在靠近顶面的位置绘制圆，因此圆心坐标的y值为1
+        swSketchMgr.CreateCircleByRadius(0, 1, 0, 0.2);
+        swSketchMgr.InsertSketch(true);
+
+        //选择顶面，绘制样条曲线
+        swModel.ClearSelection2(true);
+        swModelDocExt.SelectByRay(0, 2, 1, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        //绘制样条曲线之前需要构建一个数组（点坐标x，y，z）
+        var points = new double[12];//取4个点即可
+        points[0] = 0;//x
+        points[1] = 0;//y
+        points[2] = 0;//z
+        points[3] = 0.2;
+        points[4] = -0.5;
+        points[5] = 0;
+        points[6] = -0.2;
+        points[7] = -1.5;
+        points[8] = 0;
+        points[9] = 0;
+        points[10] = -2;
+        points[11] = 0;
+        //创建样条曲线
+        swSketchMgr.CreateSpline3(points, null, null, true, out _);
+        swSketchMgr.InsertSketch(true);
+        swModel.ClearSelection2(true);
+
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+
+        //选择轮廓标记为1,草图圆
+        swModelDocExt.SelectByID2("", "SKETCH", 0.2, 1, 2, false, 1, null, 0);
+        //选择路径标记为4，样条曲线草图
+        swModelDocExt.SelectByID2("", "SKETCH", 0, 1, 0, true, 4, null, 0);
+        var swSweepData = (SweepFeatureData)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmSweepCut);
+        //使用SweepFeatureData的默认值，不修改了
+        var swFeat = swFeatMgr.CreateFeature(swSweepData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //扫描凸台swFmSweep：特征名：Sweep1，特征类型：Sweep
+            //扫描切除swFmSweepCut：特征名：Cut-Sweep1，特征类型：SweepCut
+        }
+
+        ////显示轴测图，方便观察
+        //swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        //swModel.ViewZoomtofit2();
+    }
 
 
 
