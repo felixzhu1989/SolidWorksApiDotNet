@@ -1,9 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using LearnSolidWorksApi;
-using SolidWorks.Interop.sldworks;
 
-SldWorks swApp = SolidWorksSingleton.GetApplication();
+var swApp = SwUtility.ConnectSw();
 //swApp.SendMsgToUser("Hello, SolidWorks!");
 Console.WriteLine("Hello, SolidWorks!");
 
@@ -61,6 +60,10 @@ EditFeature feature = new EditFeature(swApp);
 //旋转切除
 //feature.RevolveCut();
 //扫描切除
-feature.SweepCut();
+//feature.SweepCut();
+//放样切除
+feature.LoftCut();
+
+
 
 #endregion

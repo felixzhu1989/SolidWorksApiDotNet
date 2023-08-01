@@ -5,9 +5,9 @@ namespace LearnSolidWorksApi;
 
 public class EditFeature
 {
-    private readonly SldWorks _swApp;
+    private readonly ISldWorks _swApp;
 
-    public EditFeature(SldWorks swApp)
+    public EditFeature(ISldWorks swApp)
     {
         _swApp = swApp;
     }
@@ -406,6 +406,84 @@ public class EditFeature
         //swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 放样切除
+    /// </summary>
+    public void LoftCut()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
 
+        //选择正面，绘制矩形
+        //选择正面,使用SelectByRay
+        swModel.ClearSelection2(true);
+        //以超出正方体的一个点，射向正方体某个面,从点(0,0,3)沿着z轴负向(0,0,-1)射线(圆柱形射线半径为0.001)，于射线相交的第一个面swSelFACES
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        //创建草图，绘制草图
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCenterRectangle(0, 0, 0, 0.7, 0.7, 0);
+        swSketchMgr.InsertSketch(true);
+        swModel.ClearSelection2(true);
+
+        //选择背面，绘制草图圆
+        swModelDocExt.SelectByRay(0, 0, -3, 0, 0, 1, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        //创建草图，绘制草图
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(0, 0, 0, 0.5);
+        swSketchMgr.InsertSketch(true);
+        swModel.ClearSelection2(true);
+
+        //选择两个轮廓草图，标记为1
+        swModelDocExt.SelectByID2("", "SKETCH", 0.7, 0.7, 2, false, 1, null, 0);
+        swModelDocExt.SelectByID2("", "SKETCH", 0.5, 0, 0, true, 1, null, 0);
+
+        //创建放样切除特征
+        //可以对比放样凸台的参数看看
+        //var swFeat = swFeatMgr.InsertProtrusionBlend(false //闭合放样
+        //    , true //保持相切
+        //    , false //获得更光滑的表面
+        //    , 1 //中间截面数量因子
+        //    , 0 //起始相切类型
+        //    , 0 //结束相切类型
+        //    , 1 //起始切线长度
+        //    , 1 //结束切线长度
+        //    , true //起始沿着相切方向
+        //    , true //结束沿着相切方向
+        //    , false //薄壁特征false表示不是薄壁
+        //    , 0 //壁厚1
+        //    , 0 //壁厚2
+        //    , 0 //壁厚类型
+        //    , true //合并实体
+        //    , true
+        //    , true
+        //);//由于没有用InsertProtrusionBlend2方法，所以没有最后一个参数
+        var swFeat = swFeatMgr.InsertCutBlend(false//闭合放样
+            , true//保持相切
+            , true//获得更光滑的表面
+            , 1//中间截面数量因子
+            , 0//起始相切类型
+            , 0//结束相切类型
+            , false//薄壁特征false表示不是薄壁
+            , 0 //壁厚1
+            , 0 //壁厚2
+            , 0//壁厚类型
+            , true //受特征影响的范围
+            , true);//自动选择受特征影响的实体
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //放样切除：特征名：Cut-Loft1，特征类型：BlendCut
+            //放样凸台：特征名：Loft1，特征类型：Blend
+        }
+
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
 
 }
