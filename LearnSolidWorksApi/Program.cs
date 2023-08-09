@@ -62,8 +62,9 @@ EditFeature feature = new EditFeature(swApp);
 //扫描切除
 //feature.SweepCut();
 //放样切除
-feature.LoftCut();
-
+//feature.LoftCut();
+//异型孔向导
+feature.HoleWizard();
 
 
 #endregion

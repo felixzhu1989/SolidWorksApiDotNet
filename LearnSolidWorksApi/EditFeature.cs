@@ -1,5 +1,6 @@
 ﻿using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
+using System.Collections.Generic;
 
 namespace LearnSolidWorksApi;
 
@@ -485,5 +486,70 @@ public class EditFeature
         swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
         swModel.ViewZoomtofit2();
     }
+
+    /// <summary>
+    /// 异型孔向导
+    /// </summary>
+    public void HoleWizard()
+    {
+        var swModel = _swApp.CreatePart();
+        var swModelExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        #region 创建一个长方体
+        swModelExt.SelectByID2("Front Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCenterRectangle(0, 0, 0, 10d / 1000d, 5d / 1000d, 0);
+
+        swFeatMgr.FeatureExtrusion2(true, false, false, 0, 0, 50 / 1000d, 0, false, false, false, false, 0, 0, false,
+            false, false, false, true, true, true, 0, 0, false);
+        #endregion
+
+        //选择顶面
+        swModelExt.SelectByRay(0, 10d/1000d, 30d/1000d, 0,
+            -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);//2，代表面
+        //异型孔向导
+        var swHoleFeat = swFeatMgr.HoleWizard5(
+            0,//孔类型，这里代表柱形沉头孔
+            8,//标准ISO
+            139,//紧固件类型
+            "M6",//孔规格
+            1,//终止条件，完全贯穿
+            6.6d/1000d,//孔直径
+            -1,//孔深度，完全贯穿时不起作用
+            -1,//槽长度，不适用于孔
+            11d/1000d,//沉头直径
+            6.4d/1000d,//沉头深度
+            0,//头部间隙
+            1,//螺钉套合，1正常
+            0,//底部钻孔，贯穿时不适用
+            0.012,//近端锥孔直径
+            Math.PI/2d,//近端锥孔角度，90都的弧度
+            7d/1000d,//螺钉下锥孔直径
+            Math.PI/2d,//螺钉下锥孔角度
+            7d/1000d,//远端锥孔直径
+            Math.PI/2d,//远端锥孔角度
+            0,//偏移，不适用
+            "",//螺纹线等级
+            false,//不反转方向
+            true,//特征影响选定实体
+            true,
+            true,//装配体特征
+            true,
+            false);
+
+        if (swHoleFeat != null)
+        {
+            Console.WriteLine($"特征名：{swHoleFeat.Name}，特征类型：{swHoleFeat.GetTypeName2()}");
+            //特征名：M6 六角凹头螺钉的柱形沉头孔1，特征类型：HoleWzd
+        }
+
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
+
+
 
 }
