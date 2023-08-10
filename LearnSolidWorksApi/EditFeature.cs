@@ -1,6 +1,7 @@
 ﻿using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LearnSolidWorksApi;
 
@@ -510,7 +511,7 @@ public class EditFeature
         swModelExt.SelectByRay(0, 10d/1000d, 30d/1000d, 0,
             -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);//2，代表面
         //异型孔向导
-        var swHoleFeat = swFeatMgr.HoleWizard5(
+        var swHoleFeature = swFeatMgr.HoleWizard5(
             0,//孔类型，这里代表柱形沉头孔
             8,//标准ISO
             139,//紧固件类型
@@ -538,10 +539,36 @@ public class EditFeature
             true,//装配体特征
             true,
             false);
+        //选择第一个子特征，也就是位置草图特征
+        var swSketchFeature = (Feature)swHoleFeature.GetFirstSubFeature();//特别注意对返回的object对象进行强制转换，因为C#是强类型语言
+        swSketchFeature.Select2(false, 0);
+        swModel.EditSketch();//编辑选中的草图
+        var swSelectionManager = (SelectionMgr)swModel.SelectionManager;//选择管理器对象
+        var swSketch = (Sketch)swSketchFeature.GetSpecificFeature2();//根据特征获取具体的对象类型，这里是草图对象
+       var swSketchPointArray = swSketch.GetSketchPoints2() as object[];//实际上是一个草图点的数组
+       //如果需要遍历的话需要转换成数组，删除位置草图中所有的点
+       for (int i = 0; i < swSketchPointArray.Length; i++)
+       {
+           //遍历时，CSharp的语法比较简洁
+           var boolstatus = swSelectionManager.AddSelectionListObject(swSketchPointArray[i], null);//将草图点添加到选择集中
+           Debug.Print(boolstatus.ToString());
+           swModel.EditDelete();//删除选中对象
+       }
+       //这里需要特别注意，编辑草图时草图的坐标
+       //本案例中，图形处于y轴负方向
+       //在实际应用时，可以通过参数来控制点的坐标
+       swSketchMgr.CreatePoint(0, -10d/1000d, 0);
+        //也可以创建多个点
+        swSketchMgr.CreatePoint(0, -25d/1000d, 0);
+        swSketchMgr.CreatePoint(0, -40d/1000d, 0);
 
-        if (swHoleFeat != null)
+
+        swSketchMgr.InsertSketch(true);
+
+
+        if (swHoleFeature != null)
         {
-            Console.WriteLine($"特征名：{swHoleFeat.Name}，特征类型：{swHoleFeat.GetTypeName2()}");
+            Console.WriteLine($"特征名：{swHoleFeature.Name}，特征类型：{swHoleFeature.GetTypeName2()}");
             //特征名：M6 六角凹头螺钉的柱形沉头孔1，特征类型：HoleWzd
         }
 
