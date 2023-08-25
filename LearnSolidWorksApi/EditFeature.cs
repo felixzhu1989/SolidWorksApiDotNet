@@ -577,6 +577,53 @@ public class EditFeature
         swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 面圆角
+    /// </summary>
+    public void FaceFillet()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //Create the fillet feature data object
+        var swFilletData = (SimpleFilletFeatureData2)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmFillet);//注意强制转换类型
+
+        //Initialize the fillet feature data object with a simple fillet type
+        swFilletData.Initialize((int)swSimpleFilletType_e.swFaceFillet);//初始化为面圆角
+
+
+        swModel.ClearSelection2(true);
+        // Select adjacent faces using Marks 2 and 4,选择相邻的两个面，并分别标记为2和4
+        //正面
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, 2, false, 2, 0);
+        swModelDocExt.SelectByRay(0, 3, 0, 0, -1, 0, 0.001, 2, true, 4, 0);
+        swFilletData.AsymmetricFillet = true;//不对称
+        swFilletData.DefaultRadius = 0.1d;//第一圆角大小，因为我们这里正方体比较大，所以就画得大
+        swFilletData.DefaultDistance = 0.2d;//第二圆角大小
+
+
+        //Narrow the fillet type by specifying the feature fillet profile type
+        swFilletData.ConicTypeForCrossSectionProfile = (int)swFeatureFilletProfileType_e.swFeatureFilletCircular;
+
+
+        //Create the fillet feature
+        var swFeat = swFeatMgr.CreateFeature(swFilletData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Fillet1，特征类型：Fillet
+        }
+    }
+
+
+
+
 
 
 }
