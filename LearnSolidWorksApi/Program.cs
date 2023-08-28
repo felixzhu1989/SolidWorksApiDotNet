@@ -66,8 +66,10 @@ EditFeature feature = new EditFeature(swApp);
 //异型孔向导
 //feature.HoleWizard();
 //面圆角
-feature.FaceFillet();
-
-
+//feature.FaceFillet();
+//固定大小圆角
+//feature.ConstRadiusFillet();
+//完整圆角特征
+feature.FullRoundFillet();
 
 #endregion

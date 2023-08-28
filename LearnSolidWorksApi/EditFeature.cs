@@ -621,9 +621,108 @@ public class EditFeature
         }
     }
 
+    /// <summary>
+    /// 固定大小圆角
+    /// </summary>
+    public void ConstRadiusFillet()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //Create the fillet feature data object
+        var swFilletData = (SimpleFilletFeatureData2)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmFillet);//注意强制转换类型
+
+        //Initialize the fillet feature data object with a simple fillet type
+        swFilletData.Initialize((int)swSimpleFilletType_e.swConstRadiusFillet);//初始化为固定大小圆角
+
+
+        swModel.ClearSelection2(true);
+        //Call IModelDocExtension::SelectByID2 with Mark = 1 to select the edges, faces, features, or loops to fillet. 
+        //edges,选择边的时候
+        swModelDocExt.SelectByRay(0, 3, 2, 0, -1, 0, 0.001, (int)swSelectType_e.swSelEDGES, false, 1, 0);
+        //faces，选择面的时候
+        //swModelDocExt.SelectByRay(0, 3, 1, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 1, 0);
+        //features,选择特征时候，选择特征，我们最好是从特征树上选择
+        //FeatureByPositionReverse逆序获取特征，0代表最后一个特征
+        //var extrudeFeat = (Feature)swModel.FeatureByPositionReverse(0);
+        //然后使用Select2方法选择它并标记为1
+        //extrudeFeat.Select2(false, 1);
+
+        //loops,比较复杂，有兴趣的朋友可以研究一下
 
 
 
+        /*swFilletData.AsymmetricFillet = true;//不对称
+        swFilletData.DefaultRadius = 0.1d;//第一圆角大小，因为我们这里正方体比较大，所以就画得大
+        swFilletData.DefaultDistance = 0.2d;//第二圆角大小*/
+        //对称
+        swFilletData.AsymmetricFillet = false;
+        swFilletData.DefaultRadius = 0.2d;
+
+
+        //Narrow the fillet type by specifying the feature fillet profile type
+        swFilletData.ConicTypeForCrossSectionProfile = (int)swFeatureFilletProfileType_e.swFeatureFilletCircular;
+
+
+        //Create the fillet feature
+        var swFeat = swFeatMgr.CreateFeature(swFilletData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Fillet1，特征类型：Fillet
+        }
+    }
+
+    public void FullRoundFillet()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //Create the fillet feature data object
+        var swFilletData = (SimpleFilletFeatureData2)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmFillet);//注意强制转换类型
+
+        //Initialize the fillet feature data object with a simple fillet type
+        swFilletData.Initialize((int)swSimpleFilletType_e.swFullRoundFillet);//初始化为完整圆角类型
+
+
+        swModel.ClearSelection2(true);
+        //Call IModelDocExtension::SelectByID2 with:
+        //-Mark = 2 to select Face Set 1.左边面
+        swModelDocExt.SelectByRay(-3, 0, 1, 1, 0, 0, 0.001, 2, false, 2, 0);
+
+        //- Mark = 512 to select Center Face Set.正面作为中面
+        swModelDocExt.SelectByRay(0, 0, 3, 0, 0, -1, 0.001, 2, true, 512, 0);
+
+        //- Mark = 4 to select Face Set 2.右边面
+        swModelDocExt.SelectByRay(3, 0, 1, -1, 0, 0, 0.001, 2, true, 4, 0);
+        
+        swFilletData.PropagateToTangentFaces=true;//可选项
+
+
+        //Narrow the fillet type by specifying the feature fillet profile type
+        swFilletData.ConicTypeForCrossSectionProfile = (int)swFeatureFilletProfileType_e.swFeatureFilletCircular;
+
+
+        //Create the fillet feature
+        var swFeat = swFeatMgr.CreateFeature(swFilletData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Fillet1，特征类型：Fillet
+        }
+    }
 
 
 }
