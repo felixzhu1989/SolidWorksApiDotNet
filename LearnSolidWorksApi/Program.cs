@@ -70,6 +70,11 @@ EditFeature feature = new EditFeature(swApp);
 //固定大小圆角
 //feature.ConstRadiusFillet();
 //完整圆角特征
-feature.FullRoundFillet();
+//feature.FullRoundFillet();
+//倒角
+feature.Chamfer();
+
+
+
 
 #endregion

@@ -1,6 +1,5 @@
 ﻿using SolidWorks.Interop.sldworks;
 using SolidWorks.Interop.swconst;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace LearnSolidWorksApi;
@@ -679,6 +678,9 @@ public class EditFeature
         }
     }
 
+    /// <summary>
+    /// 完整圆角
+    /// </summary>
     public void FullRoundFillet()
     {
         //创建一个正方体
@@ -723,6 +725,68 @@ public class EditFeature
             //特征名：Fillet1，特征类型：Fillet
         }
     }
+
+    /// <summary>
+    /// 倒角
+    /// </summary>
+    public void Chamfer()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //选择边
+        swModel.ClearSelection2(true);
+        //swModelDocExt.SelectByRay(0, 3, 2, 0, -1, 0, 0.001, (int)swSelectType_e.swSelEDGES, false, 0, 0);
+
+        //AngleDistance
+        //var swFeat = swFeatMgr.InsertFeatureChamfer(
+        //    (int)swFeatureChamferOption_e.swFeatureChamferTangentPropagation,//切线延伸
+        //    (int)swChamferType_e.swChamferAngleDistance,//角度距离
+        //    0.1,Math.PI/4d,0, //距离，角度45度(Math.PI/2d是90度)
+        //    0,0,0
+        //    );
+
+        //DistanceDistance
+        //var swFeat = swFeatMgr.InsertFeatureChamfer(
+        //    (int)swFeatureChamferOption_e.swFeatureChamferTangentPropagation,//切线延伸
+        //    (int)swChamferType_e.swChamferDistanceDistance,//距离距离
+        //    0.1, 0, 0.2, //距离，0,距离
+        //    0, 0, 0
+        //);
+
+        //EqualDistance，失败了，这个有问题，最好不要用
+        //var swFeat = swFeatMgr.InsertFeatureChamfer(
+        //    (int)swFeatureChamferOption_e.swFeatureChamferTangentPropagation,//切线延伸
+        //    (int)swChamferType_e.swChamferEqualDistance,//等距离
+        //    0, 0, 0.2, //0，0,距离
+        //    0, 0, 0
+        //);
+
+        //Vertex，顶点，因此需要选择顶点而不是边
+        swModelDocExt.SelectByRay(1, 3, 2, 0, -1, 0, 0.001, (int)swSelectType_e.swSelVERTICES, false, 0, 0);
+
+        var swFeat = swFeatMgr.InsertFeatureChamfer(
+            (int)swFeatureChamferOption_e.swFeatureChamferTangentPropagation,//切线延伸
+            (int)swChamferType_e.swChamferVertex,//顶点
+            0, 0, 0, //0，0,距离
+            0.1, 0.2, 0.3 //顶点的距离
+        );
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Chamfer1，特征类型：Chamfer
+        }
+
+    }
+
+
+
 
 
 }
