@@ -72,8 +72,9 @@ EditFeature feature = new EditFeature(swApp);
 //完整圆角特征
 //feature.FullRoundFillet();
 //倒角
-feature.Chamfer();
-
+//feature.Chamfer();
+//镜像特征
+feature.Mirror();
 
 
 

@@ -785,6 +785,54 @@ public class EditFeature
 
     }
 
+    /// <summary>
+    /// 镜像特征
+    /// </summary>
+    public void Mirror()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+
+        //选择顶面再绘制一个拉伸特征
+        swModel.ClearSelection2(true);
+        swModelDocExt.SelectByRay(0, 3, 0, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(-0.5, -1.5, 0, 0.4);
+        //要镜像的拉伸特征
+        var extrudeFeat = swFeatMgr.FeatureExtrusion3(true, false, false,
+            (int)swEndConditions_e.swEndCondBlind, 0, 0.5d, 0,
+            false, false, false, false, 0, 0,
+            false, false, false, false,
+            true, false, true, (int)swStartConditions_e.swStartSketchPlane, 0, false);
+        swModel.ClearSelection2(true);
+        //选择需要镜像的特征，标记为1，选择镜像平面标记为2
+        extrudeFeat.Select2(false, 1);
+        swModelDocExt.SelectByID2("Right Plane", "PLANE", 0, 0, 0, true, 2, null, 0);
+        //插入镜像特征
+      var swFeat=  swFeatMgr.InsertMirrorFeature2(
+            false, //false表示镜像特征或面，true表示镜像体
+            false, //false表示不是镜像几何体
+            false, //合并所有镜像实体
+            false, //Knit表面
+            (int)swFeatureScope_e.swFeatureScope_AllBodies);//受镜像特征影响的实体
+
+
+      if (swFeat != null)
+      {
+          Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+          //特征名：Mirror1，特征类型：MirrorPattern
+        }
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+      swModel.ViewZoomtofit2();
+    }
+
+
 
 
 
