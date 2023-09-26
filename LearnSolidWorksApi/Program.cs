@@ -74,8 +74,9 @@ EditFeature feature = new EditFeature(swApp);
 //倒角
 //feature.Chamfer();
 //镜像特征
-feature.Mirror();
-
+//feature.Mirror();
+//线性阵列特征
+feature.LinearPattern();
 
 
 #endregion

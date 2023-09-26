@@ -832,7 +832,69 @@ public class EditFeature
       swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 线性阵列特征
+    /// </summary>
+    public void LinearPattern()
+    {
+        //创建一个正方体
+        FeatureExtrusion();
+        //首先准备一些模型对象
+        var swModel = (ModelDoc2)_swApp.ActiveDoc;
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
 
+        //选择顶面再绘制一个拉伸特征
+        swModel.ClearSelection2(true);
+        swModelDocExt.SelectByRay(0, 3, 0, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(-0.5, -1.5, 0, 0.4);
+        //要阵列的拉伸特征
+        var extrudeFeat = swFeatMgr.FeatureExtrusion3(true, false, false,
+            (int)swEndConditions_e.swEndCondBlind, 0, 0.5d, 0,
+            false, false, false, false, 0, 0,
+            false, false, false, false,
+            true, false, true, (int)swStartConditions_e.swStartSketchPlane, 0, false);
+        swModel.ClearSelection2(true);
+
+        //选择特征，标记为4
+        extrudeFeat.Select2(false, 4);
+        //选择两条边，作为两个阵列方向，分别标记为1和2
+        swModelDocExt.SelectByRay(0, 3, 2, 0, -1, 0, 0.001, (int)swSelectType_e.swSelEDGES, true, 1, 0);
+        swModelDocExt.SelectByRay(-1, 3, 1, 0, -1, 0, 0.001, (int)swSelectType_e.swSelEDGES, true, 2, 0);
+
+        //创建特征数据对象
+        var swLinearPatternFeatureData = (LinearPatternFeatureData)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmLPattern);
+        //方向1的参数属性
+        swLinearPatternFeatureData.D1EndCondition = 0;//阵列终止条件，0是间距与实例数，1是到参考
+        swLinearPatternFeatureData.D1ReverseDirection = true;//设置为true，需要反向，false，不需要反向
+        swLinearPatternFeatureData.D1Spacing = 1d;//阵列间距，
+        swLinearPatternFeatureData.D1TotalInstances = 2;//阵列实例数
+
+        //方向2的参数属性
+        swLinearPatternFeatureData.D2EndCondition = 0;//阵列终止条件，0是间距与实例数，1是到参考
+        swLinearPatternFeatureData.D2ReverseDirection = false;//不反向
+        swLinearPatternFeatureData.D2Spacing = 1d;//阵列间距，
+        swLinearPatternFeatureData.D2TotalInstances = 2;//阵列实例数
+        swLinearPatternFeatureData.D2PatternSeedOnly = false;//不勾选只阵列源
+
+        //其他选项
+        swLinearPatternFeatureData.GeometryPattern = false;//不勾选几何体阵列
+        swLinearPatternFeatureData.VarySketch=false;//不是变化草图
+
+        //创建线性阵列特征
+        var swFeat = swFeatMgr.CreateFeature(swLinearPatternFeatureData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：LPattern1，特征类型：LPattern
+        }
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
 
 
 
