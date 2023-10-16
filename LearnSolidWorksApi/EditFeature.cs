@@ -896,6 +896,138 @@ public class EditFeature
         swModel.ViewZoomtofit2();
     }
 
+    /// <summary>
+    /// 圆周阵列
+    /// </summary>
+    public void CircularPattern()
+    {
+        //先新建零件
+        var swModel = _swApp.CreatePart();
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+        //然后绘制一个圆柱体
+        swModelDocExt.SelectByID2("Top Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(0, 0, 0, 1);
+        var baseFeat=swFeatMgr.FeatureExtrusion3(
+            true,true,false,(int)swEndConditions_e.swEndCondBlind,0,
+            100d/1000d,0,false,false,false,true,0,0,
+            false,false,false,false,
+            true,false,true,
+                (int)swStartConditions_e.swStartSketchPlane,0,false);
+        swModel.ClearSelection2(true);
+
+        //然后选择圆柱顶面,再绘制一个拉伸凸台，作为要圆周阵列的特征
+        swModelDocExt.SelectByRay(0, 1, 0, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(-0.7d, 0, 0, 0.2d);
+        var extrudeFeat=swFeatMgr.FeatureExtrusion3(
+            true, true, false, (int)swEndConditions_e.swEndCondBlind, 0,
+            100d/1000d, 0, false, false, false, true, 0, 0,
+            false, false, false, false,
+            true, false, true,
+            (int)swStartConditions_e.swStartSketchPlane, 0, false);
+
+        //选择要阵列的特征，标记为4
+        extrudeFeat.Select2(false, 4);
+        //选择大圆的圆周边，作为圆周阵列的方向，标记为1
+        swModelDocExt.SelectByRay(0, 1, 1, 0, -1, 0, 0.001, (int)swSelectType_e.swSelEDGES, true, 1, 0);
+
+        var swCircularPatternData = (CircularPatternFeatureData)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmCirPattern);
+        //等间距的情况
+        //swCircularPatternData.EqualSpacing = true;//取值true表示等间距，取值false表示实例间距
+        //swCircularPatternData.ReverseDirection = false;//是否反向阵列
+        //swCircularPatternData.Spacing = Math.PI * 2;//间距是以角度表示，换算成弧度，2pi是360度
+        //swCircularPatternData.TotalInstances = 3;//实例数
+
+        //实例间距的情况
+        swCircularPatternData.EqualSpacing = false;//取值true表示等间距，取值false表示实例间距
+        swCircularPatternData.ReverseDirection = true;//是否反向阵列，默认false方向是逆时针方向，true是顺时针
+        swCircularPatternData.Spacing = Math.PI / 2;//间距是以角度表示，换算成弧度，pi/2是45度
+        swCircularPatternData.TotalInstances = 3;//实例数
+
+
+        swCircularPatternData.Direction2 = false;//是否有方向2
+        swCircularPatternData.GeometryPattern = false;//几何体阵列选项
+        swCircularPatternData.VarySketch=false;//变化草图选项
+
+        //创建圆周阵列特征
+        var swFeat = swFeatMgr.CreateFeature(swCircularPatternData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：CirPattern1，特征类型：CirPattern
+        }
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
+
+    public void SketchDrivenPattern()
+    {
+        //先新建零件
+        var swModel = _swApp.CreatePart();
+        var swModelDocExt = swModel.Extension;
+        var swSketchMgr = swModel.SketchManager;
+        var swFeatMgr = swModel.FeatureManager;
+        //然后绘制一个圆柱体
+        swModelDocExt.SelectByID2("Top Plane", "PLANE", 0, 0, 0, false, 0, null, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(0, 0, 0, 1);
+        var baseFeat = swFeatMgr.FeatureExtrusion3(
+            true, true, false, (int)swEndConditions_e.swEndCondBlind, 0,
+            100d/1000d, 0, false, false, false, true, 0, 0,
+            false, false, false, false,
+            true, false, true,
+            (int)swStartConditions_e.swStartSketchPlane, 0, false);
+        swModel.ClearSelection2(true);
+
+        //然后选择圆柱顶面,再绘制一个拉伸凸台，作为要圆周阵列的特征
+        swModelDocExt.SelectByRay(0, 1, 0, 0, -1, 0, 0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreateCircleByRadius(-0.7d, 0, 0, 0.2d);
+        var extrudeFeat = swFeatMgr.FeatureExtrusion3(
+            true, true, false, (int)swEndConditions_e.swEndCondBlind, 0,
+            100d/1000d, 0, false, false, false, true, 0, 0,
+            false, false, false, false,
+            true, false, true,
+            (int)swStartConditions_e.swStartSketchPlane, 0, false);
+
+        //创建阵列驱动的草图，草图中插入一些点，位置可以随意，只要在面上即可
+        swModel.ClearSelection2(true);
+        //选择顶面
+        swModelDocExt.SelectByRay(0, 1, 0, 0, -1, 0,0.001, (int)swSelectType_e.swSelFACES, false, 0, 0);
+        swSketchMgr.InsertSketch(true);
+        swSketchMgr.CreatePoint(0, 0, 0);//以这个点，使用SelectByID2选择草图
+        swSketchMgr.CreatePoint(-0.2, -0.5, 0);
+        swSketchMgr.CreatePoint(0.3, 0.7, 0);
+        swSketchMgr.CreatePoint(0.7, -0.2, 0);
+        swSketchMgr.InsertSketch(true);
+
+        swModel.ClearSelection2(true);
+        //选择特征，标记为4
+        extrudeFeat.Select2(false, 4);
+        //选择草图，标记为64
+        swModelDocExt.SelectByID2("","SKETCH",0, 100d/1000d,0,true,64,null,0);
+
+        //创建草图驱动的阵列特征数据对象
+        var swSketchPatternData = (SketchPatternFeatureData)swFeatMgr.CreateDefinition((int)swFeatureNameID_e.swFmSketchPattern);
+        swSketchPatternData.GeometryPattern = false;//不勾选几何体阵列
+        swSketchPatternData.UseCentroid=true;//参考点，重心
+        //创建草图驱动的阵列特征
+        var swFeat = swFeatMgr.CreateFeature(swSketchPatternData);
+
+        if (swFeat != null)
+        {
+            Console.WriteLine($"特征名：{swFeat.Name}，特征类型：{swFeat.GetTypeName2()}");
+            //特征名：Sketch-Pattern1，特征类型：SketchPattern
+        }
+        //显示轴测图，方便观察
+        swModel.ShowNamedView2("", (int)swStandardViews_e.swIsometricView);
+        swModel.ViewZoomtofit2();
+    }
 
 
 

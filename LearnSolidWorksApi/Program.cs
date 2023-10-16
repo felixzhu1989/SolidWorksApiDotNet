@@ -76,7 +76,10 @@ EditFeature feature = new EditFeature(swApp);
 //镜像特征
 //feature.Mirror();
 //线性阵列特征
-feature.LinearPattern();
-
+//feature.LinearPattern();
+//圆周阵列
+//feature.CircularPattern();
+//草图驱动的阵列
+feature.SketchDrivenPattern();
 
 #endregion
